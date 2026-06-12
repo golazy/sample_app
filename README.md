@@ -40,12 +40,12 @@ ADDR=127.0.0.1:3000 go run ./cmd/app
 
 ## Routes
 
-| Method | Path             | Description                 |
-|--------|------------------|-----------------------------|
-| `GET`  | `/`              | Home page                   |
-| `GET`  | `/posts`         | List embedded posts         |
-| `GET`  | `/posts/{param}` | Render an embedded post     |
-| `GET`  | `/styles.css`    | Serve an embedded public file |
+| Method | Path               | Description                   |
+|--------|--------------------|-------------------------------|
+| `GET`  | `/`                | Home page                     |
+| `GET`  | `/posts`           | List embedded posts           |
+| `GET`  | `/posts/{post_id}` | Render an embedded post       |
+| `GET`  | `/styles.css`      | Serve an embedded public file |
 
 Other embedded public files are served from the application root.
 

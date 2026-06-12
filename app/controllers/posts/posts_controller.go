@@ -42,11 +42,12 @@ func (c *PostsController) Show(
 	_ http.ResponseWriter,
 	r *http.Request,
 ) error {
-	post, ok := c.posts.Get(r.PathValue("param"))
+	slug := r.PathValue("post_id")
+	post, ok := c.posts.Get(slug)
 	if !ok {
 		return lazycontroller.Error(
 			http.StatusNotFound,
-			fmt.Errorf("post %q not found", r.PathValue("param")),
+			fmt.Errorf("post %q not found", slug),
 		)
 	}
 

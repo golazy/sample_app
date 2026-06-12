@@ -12,9 +12,19 @@ This repository is a small GoLazy application. It demonstrates:
 
 - Go 1.26 or later
 
+When this repository is used inside the GoLazy workspace, the root `go.work`
+resolves `golazy.dev` to the sibling framework checkout. The module itself does
+not contain a local `replace` directive.
+
 ## Run
 
-From this directory:
+With the GoLazy CLI installed:
+
+```sh
+lazy
+```
+
+Or run the application directly:
 
 ```sh
 go run ./cmd/app

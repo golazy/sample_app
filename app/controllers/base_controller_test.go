@@ -8,7 +8,7 @@ import (
 	"testing/fstest"
 	"time"
 
-	lazycontroller "golazy.dev/controller"
+	"golazy.dev/lazycontroller"
 	"sample_app/app/services/timeservice"
 )
 

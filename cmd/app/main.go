@@ -8,7 +8,7 @@ import (
 	"os"
 	"strconv"
 
-	lazyroutes "golazy.dev/routes"
+	"golazy.dev/lazyroutes"
 	appinit "sample_app/app/init"
 )
 

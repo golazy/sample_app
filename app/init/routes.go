@@ -4,8 +4,8 @@ import (
 	"context"
 	"net/http"
 
-	lazycontroller "golazy.dev/controller"
-	lazyroutes "golazy.dev/routes"
+	"golazy.dev/lazycontroller"
+	"golazy.dev/lazyroutes"
 	"sample_app/app/controllers/home"
 	postcontroller "sample_app/app/controllers/posts"
 )

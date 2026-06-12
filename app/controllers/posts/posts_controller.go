@@ -6,7 +6,7 @@ import (
 	"html/template"
 	"net/http"
 
-	lazycontroller "golazy.dev/controller"
+	"golazy.dev/lazycontroller"
 	"sample_app/app/controllers"
 	postservice "sample_app/app/services/posts"
 	"sample_app/lib/markdown"

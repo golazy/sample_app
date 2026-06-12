@@ -4,7 +4,7 @@ import (
 	"context"
 	"fmt"
 
-	lazycontroller "golazy.dev/controller"
+	"golazy.dev/lazycontroller"
 	"sample_app/app/services/timeservice"
 )
 

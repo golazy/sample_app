@@ -5,8 +5,8 @@ import (
 	"fmt"
 	"net/http"
 
-	lazycontroller "golazy.dev/controller"
-	lazyroutes "golazy.dev/routes"
+	"golazy.dev/lazycontroller"
+	"golazy.dev/lazyroutes"
 	"sample_app/app"
 	postservice "sample_app/app/services/posts"
 	"sample_app/app/services/timeservice"

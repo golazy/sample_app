@@ -38,10 +38,7 @@ func (c *PostsController) Index(
 	return c.Render("index")
 }
 
-func (c *PostsController) Show(
-	_ http.ResponseWriter,
-	r *http.Request,
-) error {
+func (c *PostsController) Show(_ http.ResponseWriter, r *http.Request) error {
 	slug := r.PathValue("post_id")
 	post, ok := c.posts.Get(slug)
 	if !ok {

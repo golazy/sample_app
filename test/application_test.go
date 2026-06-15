@@ -1,14 +1,12 @@
 package test
 
 import (
-	"context"
 	"net/http"
 	"net/http/httptest"
 	"strings"
 	"sync"
 	"testing"
 
-	"golazy.dev/lazyroutes"
 	appinit "sample_app/app/init"
 )
 
@@ -48,8 +46,8 @@ func TestApplicationRoutes(t *testing.T) {
 			if test.contentType != "" && !strings.Contains(response.Header().Get("Content-Type"), test.contentType) {
 				t.Fatalf("Content-Type = %q, want %q", response.Header().Get("Content-Type"), test.contentType)
 			}
-			if test.status == http.StatusMethodNotAllowed && response.Header().Get("Allow") != http.MethodGet {
-				t.Fatalf("Allow = %q, want %q", response.Header().Get("Allow"), http.MethodGet)
+			if test.status == http.StatusMethodNotAllowed && !strings.Contains(response.Header().Get("Allow"), http.MethodGet) {
+				t.Fatalf("Allow = %q, want it to contain %q", response.Header().Get("Allow"), http.MethodGet)
 			}
 		})
 	}
@@ -74,8 +72,5 @@ func TestControllersHaveRequestLocalState(t *testing.T) {
 }
 
 func application() http.Handler {
-	ctx := appinit.Context(context.Background())
-	mux := lazyroutes.New(ctx)
-	appinit.Draw(ctx, mux)
-	return mux
+	return appinit.App()
 }

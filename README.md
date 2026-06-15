@@ -40,6 +40,12 @@ ADDR=127.0.0.1:3000 go run ./cmd/app
 
 ## Routes
 
+Inspect the application route table:
+
+```sh
+lazy routes
+```
+
 | Method | Path               | Description                   |
 |--------|--------------------|-------------------------------|
 | `GET`  | `/`                | Home page                     |

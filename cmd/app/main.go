@@ -1,25 +1,21 @@
 package main
 
 import (
-	"context"
 	"errors"
 	"log"
 	"net/http"
 	"os"
 	"strconv"
 
-	"golazy.dev/lazyroutes"
 	appinit "sample_app/app/init"
 )
 
 func main() {
-	ctx := appinit.Context(context.Background())
-	mux := lazyroutes.New(ctx)
-	appinit.Draw(ctx, mux)
+	app := appinit.App()
 
 	server := &http.Server{
 		Addr:    listenAddr(),
-		Handler: mux,
+		Handler: app,
 	}
 	log.Printf("listening on %s", server.Addr)
 	if err := server.ListenAndServe(); !errors.Is(err, http.ErrServerClosed) {

@@ -7,7 +7,7 @@ import (
 	"os"
 	"strconv"
 
-	appinit "sample_app/app/init"
+	appinit "sample_app/init"
 )
 
 func main() {

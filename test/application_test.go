@@ -7,7 +7,7 @@ import (
 	"sync"
 	"testing"
 
-	appinit "sample_app/app/init"
+	appinit "sample_app/init"
 )
 
 func TestApplicationRoutes(t *testing.T) {

@@ -8,8 +8,8 @@
   </head>
   <body>
     <nav>
-      <a href="/">Home</a>
-      <a href="/posts">Posts</a>
+      <a href="{{path_for "root"}}">Home</a>
+      <a href="{{path_for "posts"}}">Posts</a>
     </nav>
     <main>
       {{$content := .content}}

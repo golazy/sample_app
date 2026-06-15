@@ -18,7 +18,7 @@ type PostsController struct {
 }
 
 func New(ctx context.Context) (*PostsController, error) {
-	base, err := controllers.NewBaseController(ctx, "posts")
+	base, err := controllers.NewBaseController(ctx)
 	if err != nil {
 		return nil, err
 	}

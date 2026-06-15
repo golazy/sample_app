@@ -12,7 +12,7 @@ type HomeController struct {
 }
 
 func New(ctx context.Context) (*HomeController, error) {
-	base, err := controllers.NewBaseController(ctx, "home")
+	base, err := controllers.NewBaseController(ctx)
 	if err != nil {
 		return nil, err
 	}

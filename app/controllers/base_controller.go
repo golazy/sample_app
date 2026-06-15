@@ -14,13 +14,12 @@ type BaseController struct {
 
 func NewBaseController(
 	ctx context.Context,
-	viewPath string,
 ) (BaseController, error) {
 	timeService, ok := timeservice.FromContext(ctx)
 	if !ok {
 		return BaseController{}, fmt.Errorf("time service is missing from application context")
 	}
-	base, err := lazycontroller.NewBase(ctx, viewPath)
+	base, err := lazycontroller.NewBase(ctx)
 	if err != nil {
 		return BaseController{}, err
 	}

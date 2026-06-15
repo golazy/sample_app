@@ -9,6 +9,8 @@ import (
 	"time"
 
 	"golazy.dev/lazycontroller"
+	"golazy.dev/lazyview"
+	_ "golazy.dev/lazyview/gotmpl"
 	"sample_app/app/services/timeservice"
 )
 
@@ -35,9 +37,10 @@ func TestBaseControllerSetsCurrentTime(t *testing.T) {
 	ctx := context.Background()
 	ctx = lazycontroller.WithRenderer(ctx, renderer)
 	ctx = lazycontroller.WithWriter(ctx, response)
+	ctx = lazycontroller.WithRoute(ctx, lazyview.Route{Controller: "home"})
 	ctx = timeservice.WithContext(ctx, fixedTimeService{now: expected})
 
-	controller, err := NewBaseController(ctx, "home")
+	controller, err := NewBaseController(ctx)
 	if err != nil {
 		t.Fatal(err)
 	}

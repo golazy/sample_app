@@ -2,6 +2,7 @@ package appinit
 
 import (
 	"golazy.dev/lazyapp"
+	_ "golazy.dev/lazyview/gotmpl"
 	"sample_app/app"
 )
 

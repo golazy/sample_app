@@ -24,3 +24,8 @@ footer {
 article {
   margin-top: 2rem;
 }
+
+.post-meta {
+  color: #666;
+  font-size: 0.9rem;
+}

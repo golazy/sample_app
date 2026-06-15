@@ -4,6 +4,7 @@ import (
 	"golazy.dev/lazyapp"
 	_ "golazy.dev/lazyview/gotmpl"
 	"sample_app/app"
+	"sample_app/app/helpers"
 )
 
 func App() *lazyapp.App {
@@ -13,5 +14,6 @@ func App() *lazyapp.App {
 		Public:  app.Public,
 		Views:   app.Views,
 		Context: Context,
+		Helpers: []map[string]any{helpers.RegisterHelpers()},
 	})
 }

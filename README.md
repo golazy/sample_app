@@ -4,6 +4,7 @@ This repository is a small GoLazy application. It demonstrates:
 
 - application dependencies initialized through `context.Context`
 - request-local controllers and template rendering
+- application helpers registered with the view renderer
 - embedded production views, local development views, public files, and
   Markdown posts
 - application-level HTTP integration tests
@@ -61,6 +62,7 @@ Other embedded public files are served from the application root.
 ```text
 app/
   controllers/       Request-local controllers
+  helpers/           Template helpers registered by the app
   public/            Embedded public files
   services/          Application services
   views/             Layouts and templates
@@ -74,6 +76,10 @@ Shared dependencies are initialized once in `init/context.go`. Routes are
 registered in `init/routes.go`. The application is assembled in `init/app.go`.
 Each route constructs a controller for the current request, so mutable render
 state is never shared between requests.
+
+Application helpers live in `app/helpers`. `init/app.go` registers them through
+`lazyapp.Config.Helpers`, and the post view uses `word_count` and `read_time`
+to render Markdown metadata.
 
 Controller views live at:
 

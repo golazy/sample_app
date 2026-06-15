@@ -32,7 +32,7 @@ func New(ctx context.Context) (*PostsController, error) {
 func (c *PostsController) Index(_ http.ResponseWriter, _ *http.Request) error {
 	c.Set("title", "Posts")
 	c.Set("posts", c.posts.List())
-	return c.Render("index")
+	return nil
 }
 
 func (c *PostsController) Show(_ http.ResponseWriter, r *http.Request) error {
@@ -53,5 +53,5 @@ func (c *PostsController) Show(_ http.ResponseWriter, r *http.Request) error {
 	c.Set("title", post.Title)
 	c.Set("post", post)
 	c.Set("body", template.HTML(body))
-	return c.Render("show")
+	return nil
 }

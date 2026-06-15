@@ -21,5 +21,5 @@ func New(ctx context.Context) (*HomeController, error) {
 
 func (c *HomeController) Index(_ http.ResponseWriter, _ *http.Request) error {
 	c.Set("title", "Home")
-	return c.Render("index")
+	return nil
 }

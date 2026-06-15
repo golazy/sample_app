@@ -12,9 +12,7 @@ type BaseController struct {
 	lazycontroller.Base
 }
 
-func NewBaseController(
-	ctx context.Context,
-) (BaseController, error) {
+func NewBaseController(ctx context.Context) (BaseController, error) {
 	timeService, ok := timeservice.FromContext(ctx)
 	if !ok {
 		return BaseController{}, fmt.Errorf("time service is missing from application context")

@@ -29,10 +29,7 @@ func New(ctx context.Context) (*PostsController, error) {
 	return &PostsController{BaseController: base, posts: posts}, nil
 }
 
-func (c *PostsController) Index(
-	_ http.ResponseWriter,
-	_ *http.Request,
-) error {
+func (c *PostsController) Index(_ http.ResponseWriter, _ *http.Request) error {
 	c.Set("title", "Posts")
 	c.Set("posts", c.posts.List())
 	return c.Render("index")

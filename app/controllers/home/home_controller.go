@@ -19,10 +19,7 @@ func New(ctx context.Context) (*HomeController, error) {
 	return &HomeController{BaseController: base}, nil
 }
 
-func (c *HomeController) Index(
-	_ http.ResponseWriter,
-	_ *http.Request,
-) error {
+func (c *HomeController) Index(_ http.ResponseWriter, _ *http.Request) error {
 	c.Set("title", "Home")
 	return c.Render("index")
 }

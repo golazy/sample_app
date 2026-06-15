@@ -4,7 +4,8 @@ This repository is a small GoLazy application. It demonstrates:
 
 - application dependencies initialized through `context.Context`
 - request-local controllers and template rendering
-- embedded views, public files, and Markdown posts
+- embedded production views, local development views, public files, and
+  Markdown posts
 - application-level HTTP integration tests
 - single-binary deployment
 
@@ -60,18 +61,19 @@ Other embedded public files are served from the application root.
 ```text
 app/
   controllers/       Request-local controllers
-  init/              Dependency and route initialization
   public/            Embedded public files
   services/          Application services
-  views/             Embedded layouts and templates
+  views/             Layouts and templates
 cmd/app/             Application executable
+init/                Application composition, dependencies, and routes
 lib/markdown/        Markdown adapter
 test/                Application integration tests
 ```
 
-Shared dependencies are initialized once in `app/init/context.go`. Routes are
-registered in `app/init/routes.go`. Each route constructs a controller for the
-current request, so mutable render state is never shared between requests.
+Shared dependencies are initialized once in `init/context.go`. Routes are
+registered in `init/routes.go`. The application is assembled in `init/app.go`.
+Each route constructs a controller for the current request, so mutable render
+state is never shared between requests.
 
 Controller views live at:
 
@@ -85,6 +87,10 @@ Layouts live at:
 app/views/layouts/<layout>.html.tpl
 ```
 
+Production builds embed views into the binary. The GoLazy CLI runs the app with
+the `lazydev` build tag so templates are read from disk during local
+development.
+
 ## Verify
 
 ```sh
@@ -93,3 +99,8 @@ go test -race ./...
 go vet ./...
 go build -o /tmp/sample-app ./cmd/app
 ```
+
+## License
+
+This sample application is released under the MIT License. See
+[LICENSE](LICENSE).

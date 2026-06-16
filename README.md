@@ -3,7 +3,7 @@
 This repository is a small GoLazy application. It demonstrates:
 
 - application dependencies initialized through `context.Context`
-- request-local controllers and template rendering
+- pooled controller instances with request-local render state
 - application helpers registered with the view renderer
 - secure cookie session configuration through `lazyapp.Config.Sessions`
 - embedded production views, local development views, public files, and
@@ -66,7 +66,7 @@ use `asset_path` to link the permanent hashed URL for cacheable assets.
 
 ```text
 app/
-  controllers/       Request-local controllers
+  controllers/       Controllers and request-local render hooks
   helpers/           Template helpers registered by the app
   public/            Embedded public files
   services/          Application services
@@ -79,8 +79,9 @@ test/                Application integration tests
 
 Shared dependencies are initialized once in `init/context.go`. Routes are
 registered in `init/routes.go`. The application is assembled in `init/app.go`.
-Each route constructs a controller for the current request, so mutable render
-state is never shared between requests.
+Routes construct controller prototypes at app startup. GoLazy borrows pooled
+controller instances for each request and resets mutable render state before
+reuse.
 
 `init/app.go` also configures cookie-backed sessions. The template keeps a
 short development `lazysession.Config.Key` in source with a TODO showing where

@@ -10,6 +10,7 @@ import (
 
 type BaseController struct {
 	lazycontroller.Base
+	timeService timeservice.Service
 }
 
 func NewBaseController(ctx context.Context) (BaseController, error) {
@@ -23,8 +24,13 @@ func NewBaseController(ctx context.Context) (BaseController, error) {
 	}
 
 	controller := BaseController{
-		Base: base,
+		Base:        base,
+		timeService: timeService,
 	}
-	controller.Set("currentTime", timeService.Now().Format("2006-01-02 15:04:05 MST"))
 	return controller, nil
+}
+
+func (c *BaseController) BeforeAction() error {
+	c.Set("currentTime", c.timeService.Now().Format("2006-01-02 15:04:05 MST"))
+	return nil
 }

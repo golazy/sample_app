@@ -2,6 +2,7 @@ package controllers
 
 import (
 	"context"
+	"net/http"
 	"net/http/httptest"
 	"strings"
 	"testing"
@@ -36,12 +37,17 @@ func TestBaseControllerSetsCurrentTime(t *testing.T) {
 	response := httptest.NewRecorder()
 	ctx := context.Background()
 	ctx = lazycontroller.WithRenderer(ctx, renderer)
-	ctx = lazycontroller.WithWriter(ctx, response)
-	ctx = lazycontroller.WithRoute(ctx, lazyview.Route{Controller: "home"})
 	ctx = timeservice.WithContext(ctx, fixedTimeService{now: expected})
 
 	controller, err := NewBaseController(ctx)
 	if err != nil {
+		t.Fatal(err)
+	}
+	request := httptest.NewRequest(http.MethodGet, "/", nil)
+	if err := controller.BindRequest(response, request, lazyview.Route{Controller: "home"}); err != nil {
+		t.Fatal(err)
+	}
+	if err := controller.BeforeAction(); err != nil {
 		t.Fatal(err)
 	}
 	if err := controller.Render("index"); err != nil {

@@ -7,6 +7,8 @@ This repository is a small GoLazy application. It demonstrates:
 - application helpers registered with the view renderer
 - embedded production views, local development views, public files, and
   Markdown posts
+- fingerprinted asset URLs through `asset_path`, immutable cache policy for
+  permanent asset URLs, and asset ETags
 - application-level HTTP integration tests
 - single-binary deployment
 
@@ -53,9 +55,11 @@ lazy routes
 | `GET`  | `/`                | Home page                     |
 | `GET`  | `/posts`           | List embedded posts           |
 | `GET`  | `/posts/{post_id}` | Render an embedded post       |
-| `GET`  | `/styles.css`      | Serve an embedded public file |
+| `GET`  | `/styles.css`      | Serve an embedded public asset |
+| `GET`  | `/styles-*.css`    | Serve a fingerprinted asset permalink |
 
-Other embedded public files are served from the application root.
+Other embedded public files are served from the application root. Templates can
+use `asset_path` to link the permanent hashed URL for cacheable assets.
 
 ## Project Structure
 

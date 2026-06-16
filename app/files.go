@@ -4,7 +4,8 @@ package app
 
 import (
 	"embed"
-	"io/fs"
+
+	"golazy.dev/lazyapp"
 )
 
 // Files contains all templates and public assets required by the application.
@@ -12,10 +13,5 @@ import (
 //go:embed views public
 var Files embed.FS
 
-func Views() (fs.FS, error) {
-	return fs.Sub(Files, "views")
-}
-
-func Public() (fs.FS, error) {
-	return fs.Sub(Files, "public")
-}
+var Views = lazyapp.MustSub(Files, "views")
+var Public = lazyapp.MustSub(Files, "public")

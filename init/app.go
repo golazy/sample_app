@@ -8,10 +8,6 @@ import (
 	"sample_app/app/helpers"
 )
 
-// In production, keep this secret stable and load it from
-// os.Getenv("SECURE_COOKIE_KEY") or another secret manager.
-const secureCookieKey = "a5c9d0bd530c48964911825a1914bf9a892e038c3474914b2792c1a5def3aa15"
-
 func App() *lazyapp.App {
 	return lazyapp.New(lazyapp.Config{
 		Name:    "sample_app",
@@ -19,12 +15,9 @@ func App() *lazyapp.App {
 		Public:  app.Public,
 		Views:   app.Views,
 		Context: Context,
-		Helpers: []map[string]any{helpers.RegisterHelpers()},
+		Helpers: lazyapp.Helpers{helpers.RegisterHelpers()},
 		Sessions: lazysession.Config{
-			Name: "sample_app_session",
-			KeyPairs: [][]byte{
-				[]byte(secureCookieKey),
-			},
+			Key: "sample-cookie-01", // TODO: Once setup, use os.Getenv("SECURE_COOKIE_KEY").
 		},
 	})
 }

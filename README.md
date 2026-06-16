@@ -35,12 +35,12 @@ Or run the application directly:
 go run ./cmd/app
 ```
 
-The application listens on <http://localhost:8080>. Set `ADDR` to use another
-port or address:
+The application listens on <http://localhost:3000>. Set `ADDR` or `PORT` to use
+another port or address:
 
 ```sh
-ADDR=3000 go run ./cmd/app
-ADDR=127.0.0.1:3000 go run ./cmd/app
+PORT=4000 go run ./cmd/app
+ADDR=127.0.0.1:4000 go run ./cmd/app
 ```
 
 ## Routes
@@ -83,9 +83,10 @@ Each route constructs a controller for the current request, so mutable render
 state is never shared between requests.
 
 `init/app.go` also configures cookie-backed sessions. The template keeps a
-development `secureCookieKey` in source with a comment showing where production
-apps should load `SECURE_COOKIE_KEY`; `lazy new` replaces that template key with
-fresh random key material for every generated app.
+short development `lazysession.Config.Key` in source with a TODO showing where
+production apps should load `SECURE_COOKIE_KEY`; `lazy new` replaces that
+template key with fresh random key material for every generated app. The
+framework expands this short key deterministically before signing cookies.
 
 Application helpers live in `app/helpers`. `init/app.go` registers them through
 `lazyapp.Config.Helpers`, and the post view uses `word_count` and `read_time`

@@ -8,6 +8,8 @@ import (
 	"io/fs"
 	"os"
 	"path/filepath"
+
+	"golazy.dev/lazyapp"
 )
 
 // ViewsDir is the local template directory used by lazydev builds.
@@ -18,6 +20,8 @@ var ViewsDir = "app/views"
 //go:embed public
 var Files embed.FS
 
+var Public = lazyapp.MustSub(Files, "public")
+
 func Views() (fs.FS, error) {
 	if ViewsDir == "" {
 		return nil, fmt.Errorf("views directory is required")
@@ -27,10 +31,6 @@ func Views() (fs.FS, error) {
 		return nil, err
 	}
 	return os.DirFS(dir), nil
-}
-
-func Public() (fs.FS, error) {
-	return fs.Sub(Files, "public")
 }
 
 func resolveViewsDir(dir string) (string, error) {

@@ -3,6 +3,7 @@ package test
 import (
 	"net/http"
 	"net/http/httptest"
+	"regexp"
 	"strings"
 	"sync"
 	"testing"
@@ -52,6 +53,30 @@ func TestApplicationRoutes(t *testing.T) {
 				t.Fatalf("Allow = %q, want it to contain %q", response.Header().Get("Allow"), http.MethodGet)
 			}
 		})
+	}
+}
+
+func TestApplicationUsesAssetPermalink(t *testing.T) {
+	handler := application()
+
+	response := httptest.NewRecorder()
+	handler.ServeHTTP(response, httptest.NewRequest(http.MethodGet, "/", nil))
+	if response.Code != http.StatusOK {
+		t.Fatalf("status = %d, want %d", response.Code, http.StatusOK)
+	}
+
+	matches := regexp.MustCompile(`href="(/styles-[a-f0-9]{12}\.css)"`).FindStringSubmatch(response.Body.String())
+	if len(matches) != 2 {
+		t.Fatalf("home body does not contain fingerprinted stylesheet URL: %s", response.Body.String())
+	}
+
+	asset := httptest.NewRecorder()
+	handler.ServeHTTP(asset, httptest.NewRequest(http.MethodGet, matches[1], nil))
+	if asset.Code != http.StatusOK {
+		t.Fatalf("asset status = %d, want %d", asset.Code, http.StatusOK)
+	}
+	if got := asset.Header().Get("Cache-Control"); got != "public, max-age=31536000, immutable" {
+		t.Fatalf("asset Cache-Control = %q, want immutable cache policy", got)
 	}
 }
 

@@ -25,7 +25,7 @@ func (s fixedTimeService) Now() time.Time {
 
 func TestBaseControllerSetsCurrentTime(t *testing.T) {
 	views := fstest.MapFS{
-		"layouts/app.html.tpl": {Data: []byte(`{{$content := .content}}{{$content}}`)},
+		"layouts/app.html.tpl": {Data: []byte(`{{.content}}`)},
 		"home/index.html.tpl":  {Data: []byte(`{{.currentTime}}`)},
 	}
 	renderer, err := lazycontroller.NewRenderer(views)

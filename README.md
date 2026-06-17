@@ -10,6 +10,7 @@ This repository is a small GoLazy application. It demonstrates:
   Markdown posts
 - fingerprinted asset URLs through `asset_path`, immutable cache policy for
   permanent asset URLs, and asset ETags
+- Tailwind stylesheet compilation through `lazy tailwind`
 - JavaScript library bundling through `lazy js`, with app JavaScript served as
   browser modules
 - application-level HTTP integration tests
@@ -18,7 +19,7 @@ This repository is a small GoLazy application. It demonstrates:
 ## Requirements
 
 - Go 1.26 or later
-- Node.js and npm when regenerating JavaScript library assets
+- Node.js and npm when regenerating JavaScript library assets or Tailwind CSS
 
 When this repository is used inside the GoLazy workspace, the root `go.work`
 resolves `golazy.dev` to the sibling framework checkout. The module itself does
@@ -75,6 +76,7 @@ app/
   helpers/           Template helpers registered by the app
   public/            Embedded public files and generated JavaScript assets
   services/          Application services
+  styles/            Tailwind input stylesheets when lazy tailwind is enabled
   views/             Layouts and templates
 cmd/app/             Application executable
 init/                Application composition, dependencies, and routes
@@ -118,6 +120,7 @@ development.
 ## Verify
 
 ```sh
+lazy tailwind
 lazy js
 go test ./...
 go test -race ./...

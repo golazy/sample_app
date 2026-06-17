@@ -1,7 +1,11 @@
 {
-  "private": true,
   "dependencies": {
     "@hotwired/stimulus": "latest",
     "@hotwired/turbo": "latest"
-  }
+  },
+  "devDependencies": {
+    "@tailwindcss/cli": "latest",
+    "tailwindcss": "latest"
+  },
+  "private": true
 }

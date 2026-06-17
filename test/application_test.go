@@ -28,7 +28,7 @@ func TestApplicationRoutes(t *testing.T) {
 		{name: "post word count helper", method: http.MethodGet, path: "/posts/hello-golazy", status: http.StatusOK, contains: "25 words", contentType: "text/html"},
 		{name: "post read time helper", method: http.MethodGet, path: "/posts/hello-golazy", status: http.StatusOK, contains: "1 min read", contentType: "text/html"},
 		{name: "missing post", method: http.MethodGet, path: "/posts/missing", status: http.StatusNotFound, contains: "Not Found"},
-		{name: "public file", method: http.MethodGet, path: "/styles.css", status: http.StatusOK, contains: "color-scheme", contentType: "text/css"},
+		{name: "public file", method: http.MethodGet, path: "/styles.css", status: http.StatusOK, contains: "tailwindcss", contentType: "text/css"},
 		{name: "application JavaScript", method: http.MethodGet, path: "/javascript/application.js", status: http.StatusOK, contains: `import "@hotwired/turbo"`, contentType: "text/javascript"},
 		{name: "importmap", method: http.MethodGet, path: "/assets/importmap.json", status: http.StatusOK, contains: "@hotwired/turbo", contentType: "application/json"},
 		{name: "missing file", method: http.MethodGet, path: "/missing.txt", status: http.StatusNotFound, contains: "404 page not found"},

@@ -1,0 +1,5 @@
+[entrypoint.turbo]
+module = "@hotwired/turbo"
+
+[entrypoint.stimulus]
+module = "@hotwired/stimulus"

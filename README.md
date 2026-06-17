@@ -10,12 +10,15 @@ This repository is a small GoLazy application. It demonstrates:
   Markdown posts
 - fingerprinted asset URLs through `asset_path`, immutable cache policy for
   permanent asset URLs, and asset ETags
+- JavaScript library bundling through `lazy js`, with app JavaScript served as
+  browser modules
 - application-level HTTP integration tests
 - single-binary deployment
 
 ## Requirements
 
 - Go 1.26 or later
+- Node.js and npm when regenerating JavaScript library assets
 
 When this repository is used inside the GoLazy workspace, the root `go.work`
 resolves `golazy.dev` to the sibling framework checkout. The module itself does
@@ -58,6 +61,8 @@ lazy routes
 | `GET`  | `/posts/{post_id}` | Render an embedded post       |
 | `GET`  | `/styles.css`      | Serve an embedded public asset |
 | `GET`  | `/styles-*.css`    | Serve a fingerprinted asset permalink |
+| `GET`  | `/javascript/application.js` | Serve app-owned browser JavaScript |
+| `GET`  | `/assets/importmap.json` | Serve the generated JavaScript importmap |
 
 Other embedded public files are served from the application root. Templates can
 use `asset_path` to link the permanent hashed URL for cacheable assets.
@@ -68,11 +73,12 @@ use `asset_path` to link the permanent hashed URL for cacheable assets.
 app/
   controllers/       Controllers and request-local render hooks
   helpers/           Template helpers registered by the app
-  public/            Embedded public files
+  public/            Embedded public files and generated JavaScript assets
   services/          Application services
   views/             Layouts and templates
 cmd/app/             Application executable
 init/                Application composition, dependencies, and routes
+js.toml              JavaScript library entrypoints for lazy js
 lib/markdown/        Markdown adapter
 test/                Application integration tests
 ```
@@ -112,6 +118,7 @@ development.
 ## Verify
 
 ```sh
+lazy js
 go test ./...
 go test -race ./...
 go vet ./...

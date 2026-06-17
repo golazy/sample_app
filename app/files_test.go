@@ -1,5 +1,3 @@
-//go:build !lazydev
-
 package app
 
 import (

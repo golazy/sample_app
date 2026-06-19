@@ -18,6 +18,7 @@ This repository is a small GoLazy application. It demonstrates:
 
 ## Requirements
 
+- mise when using the provided development toolchain
 - Go 1.26 or later
 - Node.js and npm when regenerating JavaScript library assets or Tailwind CSS
 
@@ -26,6 +27,26 @@ resolves `golazy.dev` to the sibling framework checkout. The module itself does
 not contain a local `replace` directive.
 
 ## Run
+
+With mise installed:
+
+```sh
+mise trust
+mise install
+mise run dev
+```
+
+`mise trust` is a one-time local approval for `mise.toml`; mise requires it
+because the config loads development environment variables.
+
+The sample also includes a standalone Go task script:
+
+```sh
+mise run hello
+```
+
+Mise discovers `hello` from `.mise/tasks/hello.go`. This is an example of using
+Go for small project scripts without adding another command to `mise.toml`.
 
 With the GoLazy CLI installed:
 
@@ -46,6 +67,19 @@ another port or address:
 PORT=4000 go run ./cmd/app
 ADDR=127.0.0.1:4000 go run ./cmd/app
 ```
+
+## Development Secrets
+
+The sample app includes checked-in development values under `secrets/`.
+`mise.toml` installs Go plus the `age`, `sops`, and `usage` tools, then loads
+`secrets/development.env` for commands run through mise.
+
+`SECURE_COOKIE_KEY` configures the session cookie signing key. In development
+the checked-in value is intentionally low ceremony. In production, the
+deployment environment is responsible for providing `SECURE_COOKIE_KEY` and any
+other application environment variables.
+
+See [secrets/README.md](secrets/README.md) for the SOPS and age workflow.
 
 ## Routes
 
@@ -71,6 +105,7 @@ use `asset_path` to link the permanent hashed URL for cacheable assets.
 ## Project Structure
 
 ```text
+.mise/tasks/         Standalone mise task scripts
 app/
   controllers/       Controllers and request-local render hooks
   helpers/           Template helpers registered by the app
@@ -82,6 +117,8 @@ cmd/app/             Application executable
 init/                Application composition, dependencies, and routes
 js.toml              JavaScript library entrypoints for lazy js
 lib/markdown/        Markdown adapter
+mise.toml            Development toolchain and local env loading
+secrets/             Checked-in development secret examples
 test/                Application integration tests
 ```
 
@@ -91,11 +128,11 @@ Routes construct controller prototypes at app startup. GoLazy borrows pooled
 controller instances for each request and resets mutable render state before
 reuse.
 
-`init/app.go` also configures cookie-backed sessions. The template keeps a
-short development `lazysession.Config.Key` in source with a TODO showing where
-production apps should load `SECURE_COOKIE_KEY`; `lazy new` replaces that
-template key with fresh random key material for every generated app. The
-framework expands this short key deterministically before signing cookies.
+`init/app.go` also configures cookie-backed sessions. The app reads
+`SECURE_COOKIE_KEY` from the environment, with a short development fallback in
+source so the sample can run without setup. `lazy new` replaces that fallback
+with fresh random key material for every generated app. The framework expands
+short keys deterministically before signing cookies.
 
 Application helpers live in `app/helpers`. `init/app.go` registers them through
 `lazyapp.Config.Helpers`, and the post view uses `word_count` and `read_time`

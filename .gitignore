@@ -1,3 +1,9 @@
 node_modules/
 /asdf
 /build-*.json
+
+# Local secret material. Checked-in development examples live under secrets/.
+secrets/*.agekey
+secrets/*.key
+secrets/*.local.env
+secrets/*.plain.*

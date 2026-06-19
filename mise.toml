@@ -1,0 +1,16 @@
+[tools]
+go = "1.26.0"
+"aqua:FiloSottile/age" = "latest"
+"aqua:getsops/sops" = "latest"
+"aqua:jdx/usage" = "latest"
+
+[env]
+_.file = "secrets/development.env"
+
+[tasks.dev]
+description = "Run the GoLazy development server with development secrets."
+run = "lazy"
+
+[tasks.test]
+description = "Run the sample app tests."
+run = "go test ./..."

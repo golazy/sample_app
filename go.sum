@@ -1,4 +1,4 @@
 github.com/yuin/goldmark v1.7.13 h1:GPddIs617DnBLFFVJFgpo1aBfe/4xcvMc3SB5t/D0pA=
 github.com/yuin/goldmark v1.7.13/go.mod h1:ip/1k0VRfGynBgxOz0yCqHrbZXhcjxyuS66Brc7iBKg=
-golazy.dev v0.1.7 h1:0t4S3P7HGgpEhjpRln1PAjKJTbqyl6XvOMOyyX/ofco=
-golazy.dev v0.1.7/go.mod h1:4fTVPMW73RQIaDc51GS7SGd+zibKZ4DLKQ4p9ApnRh4=
+golazy.dev v0.1.8 h1:sTgA5NuWazpPEw0ThJrctj2mFJ0mdwkkQeCquUE9mCs=
+golazy.dev v0.1.8/go.mod h1:4fTVPMW73RQIaDc51GS7SGd+zibKZ4DLKQ4p9ApnRh4=

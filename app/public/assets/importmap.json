@@ -1,5 +1,7 @@
 {
   "imports": {
+    "/js/app.js": "/assets/lazyshaft/app/app-ZWUSRUPQ.js",
+    "/js/controllers/hello_controller.js": "/assets/lazyshaft/app/controllers/hello_controller-6YCUXWHN.js",
     "@hotwired/stimulus": "/assets/lazyshaft/stimulus-FNW3RRR2.js",
     "@hotwired/turbo": "/assets/lazyshaft/turbo-QDEQVE6U.js"
   }

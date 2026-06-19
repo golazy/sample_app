@@ -34,11 +34,12 @@ project conventions that should apply to coding agents and automation.
 
 ## Assets
 
-- App-owned browser JavaScript lives in
-  `app/public/javascript/application.js`.
-- `lazy js` manages JavaScript library assets from `js.toml`, `package.json`,
-  and the lockfile. Commit generated importmaps and `app/public/assets`
-  outputs, but do not commit `node_modules`.
+- App-owned browser JavaScript source lives in `app/js`. The main entry is
+  `app/js/app.js`; Stimulus controllers live under `app/js/controllers`.
+- `lazy js` manages JavaScript assets from `js.toml`, `package.json`,
+  and the lockfile, expands GoLazy directives in `app/js/app.js`, and bundles
+  app JavaScript into `app/public/assets/lazyshaft`. Commit generated
+  importmaps and `app/public/assets` outputs, but do not commit `node_modules`.
 - Tailwind source lives in `app/styles/application.css`.
 - `lazy tailwind` compiles the public stylesheet at `app/public/styles.css`.
 - Do not edit generated importmaps, lazyshaft bundles, or compiled CSS by hand

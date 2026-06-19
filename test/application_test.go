@@ -1,6 +1,7 @@
 package test
 
 import (
+	"encoding/json"
 	"net/http"
 	"net/http/httptest"
 	"regexp"
@@ -29,8 +30,7 @@ func TestApplicationRoutes(t *testing.T) {
 		{name: "post read time helper", method: http.MethodGet, path: "/posts/hello-golazy", status: http.StatusOK, contains: "1 min read", contentType: "text/html"},
 		{name: "missing post", method: http.MethodGet, path: "/posts/missing", status: http.StatusNotFound, contains: "Not Found"},
 		{name: "public file", method: http.MethodGet, path: "/styles.css", status: http.StatusOK, contains: "tailwindcss", contentType: "text/css"},
-		{name: "application JavaScript", method: http.MethodGet, path: "/javascript/application.js", status: http.StatusOK, contains: `import "@hotwired/turbo"`, contentType: "text/javascript"},
-		{name: "importmap", method: http.MethodGet, path: "/assets/importmap.json", status: http.StatusOK, contains: "@hotwired/turbo", contentType: "application/json"},
+		{name: "importmap", method: http.MethodGet, path: "/assets/importmap.json", status: http.StatusOK, contains: `"/js/app.js"`, contentType: "application/json"},
 		{name: "missing file", method: http.MethodGet, path: "/missing.txt", status: http.StatusNotFound, contains: "404 page not found"},
 		{name: "unsupported method", method: http.MethodPost, path: "/posts", status: http.StatusMethodNotAllowed, contains: "Method Not Allowed"},
 		{name: "unsupported public method", method: http.MethodPost, path: "/styles.css", status: http.StatusMethodNotAllowed, contains: "Method Not Allowed"},
@@ -77,8 +77,8 @@ func TestApplicationUsesAssetPermalink(t *testing.T) {
 	if !strings.Contains(response.Body.String(), `<script type="importmap">`) {
 		t.Fatalf("home body does not contain inline importmap: %s", response.Body.String())
 	}
-	if !strings.Contains(response.Body.String(), `src="/javascript/application.js"`) {
-		t.Fatalf("home body does not contain application JavaScript script: %s", response.Body.String())
+	if !strings.Contains(response.Body.String(), `import "/js/app.js"`) {
+		t.Fatalf("home body does not import app JavaScript: %s", response.Body.String())
 	}
 
 	asset := httptest.NewRecorder()
@@ -88,6 +88,44 @@ func TestApplicationUsesAssetPermalink(t *testing.T) {
 	}
 	if got := asset.Header().Get("Cache-Control"); got != "public, max-age=31536000, immutable" {
 		t.Fatalf("asset Cache-Control = %q, want immutable cache policy", got)
+	}
+}
+
+func TestApplicationJavaScriptImportmap(t *testing.T) {
+	handler := application()
+
+	response := httptest.NewRecorder()
+	handler.ServeHTTP(response, httptest.NewRequest(http.MethodGet, "/assets/importmap.json", nil))
+	if response.Code != http.StatusOK {
+		t.Fatalf("status = %d, want %d", response.Code, http.StatusOK)
+	}
+
+	var parsed struct {
+		Imports map[string]string `json:"imports"`
+	}
+	if err := json.Unmarshal(response.Body.Bytes(), &parsed); err != nil {
+		t.Fatalf("parse importmap: %v", err)
+	}
+
+	for specifier, prefix := range map[string]string{
+		"@hotwired/stimulus":                  "/assets/lazyshaft/stimulus-",
+		"@hotwired/turbo":                     "/assets/lazyshaft/turbo-",
+		"/js/app.js":                          "/assets/lazyshaft/app/app-",
+		"/js/controllers/hello_controller.js": "/assets/lazyshaft/app/controllers/hello_controller-",
+	} {
+		assetPath := parsed.Imports[specifier]
+		if !strings.HasPrefix(assetPath, prefix) {
+			t.Fatalf("importmap[%q] = %q, want prefix %q", specifier, assetPath, prefix)
+		}
+
+		asset := httptest.NewRecorder()
+		handler.ServeHTTP(asset, httptest.NewRequest(http.MethodGet, assetPath, nil))
+		if asset.Code != http.StatusOK {
+			t.Fatalf("%s status = %d, want %d", assetPath, asset.Code, http.StatusOK)
+		}
+		if !strings.Contains(asset.Header().Get("Content-Type"), "text/javascript") {
+			t.Fatalf("%s Content-Type = %q, want JavaScript", assetPath, asset.Header().Get("Content-Type"))
+		}
 	}
 }
 

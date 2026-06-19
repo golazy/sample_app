@@ -1,0 +1,2 @@
+// golazy:turbo
+// golazy:stimulus

@@ -19,13 +19,20 @@ func TestApplicationRoutes(t *testing.T) {
 		name        string
 		method      string
 		path        string
+		accept      string
 		status      int
 		contains    string
 		contentType string
 	}{
 		{name: "home", method: http.MethodGet, path: "/", status: http.StatusOK, contains: "Hello, world!", contentType: "text/html"},
 		{name: "posts", method: http.MethodGet, path: "/posts", status: http.StatusOK, contains: "Hello, GoLazy", contentType: "text/html"},
+		{name: "posts html suffix", method: http.MethodGet, path: "/posts.html", status: http.StatusOK, contains: "Hello, GoLazy", contentType: "text/html"},
+		{name: "posts markdown", method: http.MethodGet, path: "/posts", accept: "text/markdown", status: http.StatusOK, contains: "- [Hello, GoLazy](/posts/hello-golazy)", contentType: "text/markdown"},
+		{name: "posts markdown suffix", method: http.MethodGet, path: "/posts.md", status: http.StatusOK, contains: "- [Hello, GoLazy](/posts/hello-golazy)", contentType: "text/markdown"},
 		{name: "post", method: http.MethodGet, path: "/posts/hello-golazy", status: http.StatusOK, contains: "<strong>GoLazy</strong>", contentType: "text/html"},
+		{name: "post html suffix", method: http.MethodGet, path: "/posts/hello-golazy.html", status: http.StatusOK, contains: "<strong>GoLazy</strong>", contentType: "text/html"},
+		{name: "post markdown", method: http.MethodGet, path: "/posts/hello-golazy", accept: "text/markdown", status: http.StatusOK, contains: "Welcome to **GoLazy**", contentType: "text/markdown"},
+		{name: "post markdown suffix", method: http.MethodGet, path: "/posts/hello-golazy.md", status: http.StatusOK, contains: "Welcome to **GoLazy**", contentType: "text/markdown"},
 		{name: "post word count helper", method: http.MethodGet, path: "/posts/hello-golazy", status: http.StatusOK, contains: "25 words", contentType: "text/html"},
 		{name: "post read time helper", method: http.MethodGet, path: "/posts/hello-golazy", status: http.StatusOK, contains: "1 min read", contentType: "text/html"},
 		{name: "missing post", method: http.MethodGet, path: "/posts/missing", status: http.StatusNotFound, contains: "Not Found"},
@@ -39,6 +46,9 @@ func TestApplicationRoutes(t *testing.T) {
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
 			request := httptest.NewRequest(test.method, test.path, nil)
+			if test.accept != "" {
+				request.Header.Set("Accept", test.accept)
+			}
 			response := httptest.NewRecorder()
 			handler.ServeHTTP(response, request)
 

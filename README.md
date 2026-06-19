@@ -91,14 +91,17 @@ lazy routes
 | Method | Path               | Description                   |
 |--------|--------------------|-------------------------------|
 | `GET`  | `/`                | Home page                     |
-| `GET`  | `/posts`           | List embedded posts           |
-| `GET`  | `/posts/{post_id}` | Render an embedded post       |
+| `GET`  | `/posts`           | List embedded posts as HTML or Markdown |
+| `GET`  | `/posts/{post_id}` | Render an embedded post as HTML or Markdown |
 | `GET`  | `/styles.css`      | Serve an embedded public asset |
 | `GET`  | `/styles-*.css`    | Serve a fingerprinted asset permalink |
 | `GET`  | `/assets/importmap.json` | Serve the generated JavaScript importmap |
 
 Other embedded public files are served from the application root. Templates can
 use `asset_path` to link the permanent hashed URL for cacheable assets.
+Send `Accept: text/markdown`, request `/posts.md`, or request
+`/posts/{post_id}.md` to receive the raw embedded Markdown instead of the HTML
+page. The `.html` suffix keeps the normal HTML rendering.
 
 ## Project Structure
 

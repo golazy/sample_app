@@ -12,6 +12,12 @@ import (
 	"sample_app/lib/markdown"
 )
 
+var Markdown = lazycontroller.NewFormat(
+	"text/markdown",
+	lazycontroller.As("markdown"),
+	lazycontroller.Suffix("md", "markdown"),
+)
+
 type PostsController struct {
 	controllers.BaseController
 	posts *postservice.Service
@@ -29,13 +35,20 @@ func New(ctx context.Context) (*PostsController, error) {
 	return &PostsController{BaseController: base, posts: posts}, nil
 }
 
-func (c *PostsController) Index(_ http.ResponseWriter, _ *http.Request) error {
-	c.Set("title", "Posts")
-	c.Set("posts", c.posts.List())
-	return nil
+func (c *PostsController) Index(w http.ResponseWriter, _ *http.Request) error {
+	return c.Wants(lazycontroller.Formats{
+		lazycontroller.HTML: func() error {
+			c.Set("title", "Posts")
+			c.Set("posts", c.posts.List())
+			return nil
+		},
+		Markdown: func() error {
+			return c.renderMarkdownIndex(w)
+		},
+	})
 }
 
-func (c *PostsController) Show(_ http.ResponseWriter, r *http.Request) error {
+func (c *PostsController) Show(w http.ResponseWriter, r *http.Request) error {
 	slug := r.PathValue("post_id")
 	post, ok := c.posts.Get(slug)
 	if !ok {
@@ -45,6 +58,17 @@ func (c *PostsController) Show(_ http.ResponseWriter, r *http.Request) error {
 		)
 	}
 
+	return c.Wants(lazycontroller.Formats{
+		lazycontroller.HTML: func() error {
+			return c.renderHTMLPost(post)
+		},
+		Markdown: func() error {
+			return c.renderMarkdownPost(w, post)
+		},
+	})
+}
+
+func (c *PostsController) renderHTMLPost(post postservice.Post) error {
 	body, err := markdown.Convert(post.Body)
 	if err != nil {
 		return fmt.Errorf("render post markdown: %w", err)
@@ -54,4 +78,26 @@ func (c *PostsController) Show(_ http.ResponseWriter, r *http.Request) error {
 	c.Set("post", post)
 	c.Set("body", template.HTML(body))
 	return nil
+}
+
+func (c *PostsController) renderMarkdownIndex(w http.ResponseWriter) error {
+	c.ContentType("text/markdown; charset=utf-8")
+	if _, err := fmt.Fprintln(w, "# Posts"); err != nil {
+		return err
+	}
+	if _, err := fmt.Fprintln(w); err != nil {
+		return err
+	}
+	for _, post := range c.posts.List() {
+		if _, err := fmt.Fprintf(w, "- [%s](/posts/%s)\n", post.Title, post.Param); err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+func (c *PostsController) renderMarkdownPost(w http.ResponseWriter, post postservice.Post) error {
+	c.ContentType("text/markdown; charset=utf-8")
+	_, err := w.Write([]byte(post.Body))
+	return err
 }

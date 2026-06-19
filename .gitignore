@@ -1,6 +1,8 @@
 node_modules/
 /asdf
 /build-*.json
+/.hugo_build.lock
+/public/
 
 # Local secret material. Checked-in development examples live under secrets/.
 secrets/*.agekey

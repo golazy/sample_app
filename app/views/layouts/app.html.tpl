@@ -21,6 +21,18 @@
         </nav>
       </header>
       <main class="flex-1 py-10">
+        {{if .visitCount}}
+          <p class="mb-4 text-sm text-zinc-500 dark:text-zinc-400">Visit count: {{.visitCount}}</p>
+        {{end}}
+        {{if .flashMessages}}
+          <div class="mb-4 space-y-2">
+            {{range .flashMessages}}
+              <p class="rounded-md border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-900 dark:border-emerald-900/60 dark:bg-emerald-950/30 dark:text-emerald-100">
+                {{.}}
+              </p>
+            {{end}}
+          </div>
+        {{end}}
         {{.content}}
       </main>
       <footer class="border-t border-zinc-200 py-6 text-sm text-zinc-500 dark:border-zinc-800 dark:text-zinc-400">Rendered at {{.currentTime}}</footer>

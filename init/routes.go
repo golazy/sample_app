@@ -8,5 +8,6 @@ import (
 
 func Draw(router *lazyroutes.Scope) {
 	router.Get("/", home.New, (*home.HomeController).Index)
+	router.Get("/flash", home.New, (*home.HomeController).Flash)
 	router.Resources(postcontroller.New)
 }

@@ -139,6 +139,78 @@ func TestApplicationJavaScriptImportmap(t *testing.T) {
 	}
 }
 
+func TestApplicationSessionsAndFlashes(t *testing.T) {
+	t.Setenv("SECURE_COOKIE_KEY", "sample_app_session_test_key")
+
+	handler := appinit.App()
+
+	request := httptest.NewRequest(http.MethodGet, "/", nil)
+	response := httptest.NewRecorder()
+	handler.ServeHTTP(response, request)
+	if response.Code != http.StatusOK {
+		t.Fatalf("status = %d, want %d", response.Code, http.StatusOK)
+	}
+	cookies := response.Result().Cookies()
+	if len(cookies) == 0 {
+		t.Fatal("expected session cookie after first visit")
+	}
+	if !strings.Contains(response.Body.String(), "Visit count: 1") {
+		t.Fatalf("visit count not initialized: %q", response.Body.String())
+	}
+
+	request = httptest.NewRequest(http.MethodGet, "/", nil)
+	for _, cookie := range cookies {
+		request.AddCookie(cookie)
+	}
+	response = httptest.NewRecorder()
+	handler.ServeHTTP(response, request)
+	cookies = response.Result().Cookies()
+	if response.Code != http.StatusOK {
+		t.Fatalf("status = %d, want %d", response.Code, http.StatusOK)
+	}
+	if !strings.Contains(response.Body.String(), "Visit count: 2") {
+		t.Fatalf("visit count did not persist to second request: %q", response.Body.String())
+	}
+
+	request = httptest.NewRequest(http.MethodGet, "/flash", nil)
+	for _, cookie := range cookies {
+		request.AddCookie(cookie)
+	}
+	response = httptest.NewRecorder()
+	handler.ServeHTTP(response, request)
+	if response.Code != http.StatusFound {
+		t.Fatalf("flash status = %d, want %d", response.Code, http.StatusFound)
+	}
+	cookies = response.Result().Cookies()
+
+	request = httptest.NewRequest(http.MethodGet, "/", nil)
+	for _, cookie := range cookies {
+		request.AddCookie(cookie)
+	}
+	response = httptest.NewRecorder()
+	handler.ServeHTTP(response, request)
+	if response.Code != http.StatusOK {
+		t.Fatalf("status = %d, want %d", response.Code, http.StatusOK)
+	}
+	if !strings.Contains(response.Body.String(), "Visit count: 3") {
+		t.Fatalf("visit count did not increment on flash redirect: %q", response.Body.String())
+	}
+	if !strings.Contains(response.Body.String(), "This is a sample flash message") {
+		t.Fatalf("flash message did not display: %q", response.Body.String())
+	}
+	cookies = response.Result().Cookies()
+
+	request = httptest.NewRequest(http.MethodGet, "/", nil)
+	for _, cookie := range cookies {
+		request.AddCookie(cookie)
+	}
+	response = httptest.NewRecorder()
+	handler.ServeHTTP(response, request)
+	if strings.Contains(response.Body.String(), "This is a sample flash message") {
+		t.Fatalf("flash message was not consumed after first display: %q", response.Body.String())
+	}
+}
+
 func TestControllersHaveRequestLocalState(t *testing.T) {
 	handler := application()
 

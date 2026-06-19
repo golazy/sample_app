@@ -66,6 +66,9 @@ func TestApplicationUsesAssetPermalink(t *testing.T) {
 	if response.Code != http.StatusOK {
 		t.Fatalf("status = %d, want %d", response.Code, http.StatusOK)
 	}
+	if !strings.Contains(response.Body.String(), `<html lang="en" class="dark scheme-dark">`) {
+		t.Fatalf("home body does not enable Tailwind dark mode by default: %s", response.Body.String())
+	}
 
 	matches := regexp.MustCompile(`href="(/styles-[a-f0-9]{12}\.css)"`).FindStringSubmatch(response.Body.String())
 	if len(matches) != 2 {

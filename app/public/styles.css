@@ -8,7 +8,10 @@
     --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono",
       "Courier New", monospace;
     --color-cyan-50: oklch(98.4% 0.019 200.873);
+    --color-cyan-100: oklch(95.6% 0.045 203.388);
     --color-cyan-200: oklch(91.7% 0.08 205.041);
+    --color-cyan-300: oklch(86.5% 0.127 207.078);
+    --color-cyan-400: oklch(78.9% 0.154 211.53);
     --color-cyan-500: oklch(71.5% 0.143 215.221);
     --color-cyan-700: oklch(52% 0.105 223.128);
     --color-cyan-800: oklch(45% 0.085 224.283);
@@ -17,11 +20,15 @@
     --color-rose-50: oklch(96.9% 0.015 12.422);
     --color-rose-200: oklch(89.2% 0.058 10.001);
     --color-rose-950: oklch(27.1% 0.105 12.094);
+    --color-zinc-100: oklch(96.7% 0.001 286.375);
     --color-zinc-200: oklch(92% 0.004 286.32);
+    --color-zinc-300: oklch(87.1% 0.006 286.286);
+    --color-zinc-400: oklch(70.5% 0.015 286.067);
     --color-zinc-500: oklch(55.2% 0.016 285.938);
     --color-zinc-600: oklch(44.2% 0.017 285.786);
     --color-zinc-700: oklch(37% 0.013 285.805);
     --color-zinc-800: oklch(27.4% 0.006 286.033);
+    --color-zinc-900: oklch(21% 0.006 285.885);
     --color-zinc-950: oklch(14.1% 0.005 285.823);
     --color-white: #fff;
     --spacing: 0.25rem;
@@ -482,6 +489,9 @@
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
   }
+  .scheme-dark {
+    color-scheme: dark;
+  }
   .filter {
     filter: var(--tw-blur,) var(--tw-brightness,) var(--tw-contrast,) var(--tw-grayscale,) var(--tw-hue-rotate,) var(--tw-invert,) var(--tw-saturate,) var(--tw-sepia,) var(--tw-drop-shadow,);
   }
@@ -572,6 +582,157 @@
       padding-inline: calc(var(--spacing) * 10);
     }
   }
+  .dark\:divide-zinc-800 {
+    &:where(.dark, .dark *) {
+      :where(& > :not(:last-child)) {
+        border-color: var(--color-zinc-800);
+      }
+    }
+  }
+  .dark\:border-cyan-900\/60 {
+    &:where(.dark, .dark *) {
+      border-color: color-mix(in srgb, oklch(39.8% 0.07 227.392) 60%, transparent);
+      @supports (color: color-mix(in lab, red, red)) {
+        border-color: color-mix(in oklab, var(--color-cyan-900) 60%, transparent);
+      }
+    }
+  }
+  .dark\:border-zinc-800 {
+    &:where(.dark, .dark *) {
+      border-color: var(--color-zinc-800);
+    }
+  }
+  .dark\:bg-cyan-400 {
+    &:where(.dark, .dark *) {
+      background-color: var(--color-cyan-400);
+    }
+  }
+  .dark\:bg-cyan-950\/30 {
+    &:where(.dark, .dark *) {
+      background-color: color-mix(in srgb, oklch(30.2% 0.056 229.695) 30%, transparent);
+      @supports (color: color-mix(in lab, red, red)) {
+        background-color: color-mix(in oklab, var(--color-cyan-950) 30%, transparent);
+      }
+    }
+  }
+  .dark\:bg-zinc-900 {
+    &:where(.dark, .dark *) {
+      background-color: var(--color-zinc-900);
+    }
+  }
+  .dark\:bg-zinc-900\/60 {
+    &:where(.dark, .dark *) {
+      background-color: color-mix(in srgb, oklch(21% 0.006 285.885) 60%, transparent);
+      @supports (color: color-mix(in lab, red, red)) {
+        background-color: color-mix(in oklab, var(--color-zinc-900) 60%, transparent);
+      }
+    }
+  }
+  .dark\:bg-zinc-950 {
+    &:where(.dark, .dark *) {
+      background-color: var(--color-zinc-950);
+    }
+  }
+  .dark\:text-cyan-100 {
+    &:where(.dark, .dark *) {
+      color: var(--color-cyan-100);
+    }
+  }
+  .dark\:text-cyan-200 {
+    &:where(.dark, .dark *) {
+      color: var(--color-cyan-200);
+    }
+  }
+  .dark\:text-cyan-300 {
+    &:where(.dark, .dark *) {
+      color: var(--color-cyan-300);
+    }
+  }
+  .dark\:text-white {
+    &:where(.dark, .dark *) {
+      color: var(--color-white);
+    }
+  }
+  .dark\:text-zinc-100 {
+    &:where(.dark, .dark *) {
+      color: var(--color-zinc-100);
+    }
+  }
+  .dark\:text-zinc-300 {
+    &:where(.dark, .dark *) {
+      color: var(--color-zinc-300);
+    }
+  }
+  .dark\:text-zinc-400 {
+    &:where(.dark, .dark *) {
+      color: var(--color-zinc-400);
+    }
+  }
+  .dark\:text-zinc-950 {
+    &:where(.dark, .dark *) {
+      color: var(--color-zinc-950);
+    }
+  }
+  .dark\:hover\:border-cyan-800 {
+    &:where(.dark, .dark *) {
+      &:hover {
+        @media (hover: hover) {
+          border-color: var(--color-cyan-800);
+        }
+      }
+    }
+  }
+  .dark\:hover\:bg-cyan-300 {
+    &:where(.dark, .dark *) {
+      &:hover {
+        @media (hover: hover) {
+          background-color: var(--color-cyan-300);
+        }
+      }
+    }
+  }
+  .dark\:hover\:bg-cyan-950\/30 {
+    &:where(.dark, .dark *) {
+      &:hover {
+        @media (hover: hover) {
+          background-color: color-mix(in srgb, oklch(30.2% 0.056 229.695) 30%, transparent);
+          @supports (color: color-mix(in lab, red, red)) {
+            background-color: color-mix(in oklab, var(--color-cyan-950) 30%, transparent);
+          }
+        }
+      }
+    }
+  }
+  .dark\:hover\:bg-cyan-950\/40 {
+    &:where(.dark, .dark *) {
+      &:hover {
+        @media (hover: hover) {
+          background-color: color-mix(in srgb, oklch(30.2% 0.056 229.695) 40%, transparent);
+          @supports (color: color-mix(in lab, red, red)) {
+            background-color: color-mix(in oklab, var(--color-cyan-950) 40%, transparent);
+          }
+        }
+      }
+    }
+  }
+  .dark\:hover\:text-cyan-100 {
+    &:where(.dark, .dark *) {
+      &:hover {
+        @media (hover: hover) {
+          color: var(--color-cyan-100);
+        }
+      }
+    }
+  }
+  .dark\:hover\:text-cyan-200 {
+    &:where(.dark, .dark *) {
+      &:hover {
+        @media (hover: hover) {
+          color: var(--color-cyan-200);
+        }
+      }
+    }
+  }
   .\[\&_a\]\:text-cyan-700 {
     & a {
       color: var(--color-cyan-700);
@@ -580,6 +741,13 @@
   .\[\&_a\]\:underline {
     & a {
       text-decoration-line: underline;
+    }
+  }
+  .dark\:\[\&_a\]\:text-cyan-300 {
+    &:where(.dark, .dark *) {
+      & a {
+        color: var(--color-cyan-300);
+      }
     }
   }
   .\[\&_strong\]\:font-semibold {
@@ -591,6 +759,13 @@
   .\[\&_strong\]\:text-zinc-950 {
     & strong {
       color: var(--color-zinc-950);
+    }
+  }
+  .dark\:\[\&_strong\]\:text-white {
+    &:where(.dark, .dark *) {
+      & strong {
+        color: var(--color-white);
+      }
     }
   }
 }

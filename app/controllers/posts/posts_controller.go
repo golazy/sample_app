@@ -5,8 +5,10 @@ import (
 	"fmt"
 	"html/template"
 	"net/http"
+	"strings"
 
 	"golazy.dev/lazycontroller"
+	"golazy.dev/lazyseo"
 	"sample_app/app/controllers"
 	postservice "sample_app/app/services/posts"
 	"sample_app/lib/markdown"
@@ -21,6 +23,40 @@ var Markdown = lazycontroller.NewFormat(
 type PostsController struct {
 	controllers.BaseController
 	posts *postservice.Service
+}
+
+type postsIndexMetadata struct{}
+
+func (postsIndexMetadata) Title() string {
+	return "Posts"
+}
+
+func (postsIndexMetadata) Description() string {
+	return "Read sample GoLazy posts served from embedded Markdown content."
+}
+
+func (postsIndexMetadata) Canonical() string {
+	return "/posts"
+}
+
+type postMetadata struct {
+	post postservice.Post
+}
+
+func (m postMetadata) Title() string {
+	return m.post.Title
+}
+
+func (m postMetadata) Description() string {
+	return description(m.post.Body)
+}
+
+func (m postMetadata) Canonical() string {
+	return "/posts/" + m.post.Param
+}
+
+func (m postMetadata) Kind() lazyseo.PageKind {
+	return lazyseo.Article
 }
 
 func New(ctx context.Context) (*PostsController, error) {
@@ -38,7 +74,7 @@ func New(ctx context.Context) (*PostsController, error) {
 func (c *PostsController) Index(w http.ResponseWriter, _ *http.Request) error {
 	return c.Wants(lazycontroller.Formats{
 		lazycontroller.HTML: func() error {
-			c.Set("title", "Posts")
+			c.Metadata(postsIndexMetadata{})
 			c.Set("posts", c.posts.List())
 			return nil
 		},
@@ -74,10 +110,26 @@ func (c *PostsController) renderHTMLPost(post postservice.Post) error {
 		return fmt.Errorf("render post markdown: %w", err)
 	}
 
-	c.Set("title", post.Title)
+	c.Metadata(postMetadata{post: post})
 	c.Set("post", post)
 	c.Set("body", template.HTML(body))
 	return nil
+}
+
+func description(body string) string {
+	const limit = 160
+	words := strings.Fields(body)
+	var out strings.Builder
+	for _, word := range words {
+		if out.Len() > 0 && out.Len()+1+len(word) > limit {
+			break
+		}
+		if out.Len() > 0 {
+			out.WriteByte(' ')
+		}
+		out.WriteString(word)
+	}
+	return out.String()
 }
 
 func (c *PostsController) renderMarkdownIndex(w http.ResponseWriter) error {

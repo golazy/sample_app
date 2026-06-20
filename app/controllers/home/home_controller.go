@@ -11,6 +11,16 @@ type HomeController struct {
 	controllers.BaseController
 }
 
+type homeMetadata struct{}
+
+func (homeMetadata) Title() string {
+	return "Home"
+}
+
+func (homeMetadata) Canonical() string {
+	return "/"
+}
+
 func New(ctx context.Context) (*HomeController, error) {
 	base, err := controllers.NewBaseController(ctx)
 	if err != nil {
@@ -20,7 +30,7 @@ func New(ctx context.Context) (*HomeController, error) {
 }
 
 func (c *HomeController) Index(_ http.ResponseWriter, _ *http.Request) error {
-	c.Set("title", "Home")
+	c.Metadata(homeMetadata{})
 	return nil
 }
 

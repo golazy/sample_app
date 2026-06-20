@@ -1,0 +1,7 @@
+.git
+.lazy
+.mise
+.tmp
+node_modules
+public
+tmp

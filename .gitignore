@@ -3,9 +3,10 @@ node_modules/
 /build-*.json
 /.hugo_build.lock
 /public/
+/.tmp/
 
-# Local secret material. Checked-in development examples live under secrets/.
-secrets/*.agekey
-secrets/*.key
-secrets/*.local.env
-secrets/*.plain.*
+# Local secret material. Checked-in development examples live under .secrets/.
+.secrets/*.agekey
+.secrets/*.key
+.secrets/*.local.env
+.secrets/*.plain.*

@@ -10,8 +10,6 @@ import (
 	"sample_app/app/helpers"
 )
 
-const developmentSecureCookieKey = "sample-cookie-01"
-
 func App() *lazyapp.App {
 	return lazyapp.New(lazyapp.Config{
 		Name:    "sample_app",
@@ -21,14 +19,7 @@ func App() *lazyapp.App {
 		Context: Context,
 		Helpers: lazyapp.Helpers{helpers.RegisterHelpers()},
 		Sessions: lazysession.Config{
-			Key: secureCookieKey(),
+			Key: os.Getenv("SECURE_COOKIE_KEY"),
 		},
 	})
-}
-
-func secureCookieKey() string {
-	if key := os.Getenv("SECURE_COOKIE_KEY"); key != "" {
-		return key
-	}
-	return developmentSecureCookieKey
 }

@@ -25,7 +25,7 @@ func (c *HomeController) Index(_ http.ResponseWriter, _ *http.Request) error {
 }
 
 func (c *HomeController) Flash(_ http.ResponseWriter, _ *http.Request) error {
-	session, ok, err := c.session()
+	session, ok, err := c.Session()
 	if err != nil {
 		return err
 	}

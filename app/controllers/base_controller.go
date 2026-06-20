@@ -65,6 +65,10 @@ func (c *BaseController) session() (*lazysession.Session, bool, error) {
 	return session, true, nil
 }
 
+func (c *BaseController) Session() (*lazysession.Session, bool, error) {
+	return c.session()
+}
+
 func (c *BaseController) trackVisits(session *lazysession.Session) error {
 	count, err := visitCounterValue(session.Values[visitCounterKey])
 	if err != nil {

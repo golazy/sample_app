@@ -1,121 +1,65 @@
 package test
 
 import (
-	"encoding/json"
 	"net/http"
-	"net/http/httptest"
-	"regexp"
 	"strings"
 	"sync"
 	"testing"
 
+	"golazy.dev/lazytest"
 	appinit "sample_app/init"
 )
 
 func TestApplicationRoutes(t *testing.T) {
-	handler := application()
+	app := lazytest.New(t, appinit.App())
 
-	tests := []struct {
-		name        string
-		method      string
-		path        string
-		accept      string
-		status      int
-		contains    string
-		contentType string
-	}{
-		{name: "home", method: http.MethodGet, path: "/", status: http.StatusOK, contains: "Hello, world!", contentType: "text/html"},
-		{name: "posts", method: http.MethodGet, path: "/posts", status: http.StatusOK, contains: "Hello, GoLazy", contentType: "text/html"},
-		{name: "posts html suffix", method: http.MethodGet, path: "/posts.html", status: http.StatusOK, contains: "Hello, GoLazy", contentType: "text/html"},
-		{name: "posts markdown", method: http.MethodGet, path: "/posts", accept: "text/markdown", status: http.StatusOK, contains: "- [Hello, GoLazy](/posts/hello-golazy)", contentType: "text/markdown"},
-		{name: "posts markdown suffix", method: http.MethodGet, path: "/posts.md", status: http.StatusOK, contains: "- [Hello, GoLazy](/posts/hello-golazy)", contentType: "text/markdown"},
-		{name: "post", method: http.MethodGet, path: "/posts/hello-golazy", status: http.StatusOK, contains: "<strong>GoLazy</strong>", contentType: "text/html"},
-		{name: "post html suffix", method: http.MethodGet, path: "/posts/hello-golazy.html", status: http.StatusOK, contains: "<strong>GoLazy</strong>", contentType: "text/html"},
-		{name: "post markdown", method: http.MethodGet, path: "/posts/hello-golazy", accept: "text/markdown", status: http.StatusOK, contains: "Welcome to **GoLazy**", contentType: "text/markdown"},
-		{name: "post markdown suffix", method: http.MethodGet, path: "/posts/hello-golazy.md", status: http.StatusOK, contains: "Welcome to **GoLazy**", contentType: "text/markdown"},
-		{name: "post word count helper", method: http.MethodGet, path: "/posts/hello-golazy", status: http.StatusOK, contains: "25 words", contentType: "text/html"},
-		{name: "post read time helper", method: http.MethodGet, path: "/posts/hello-golazy", status: http.StatusOK, contains: "1 min read", contentType: "text/html"},
-		{name: "missing post", method: http.MethodGet, path: "/posts/missing", status: http.StatusNotFound, contains: "Not Found"},
-		{name: "public file", method: http.MethodGet, path: "/styles.css", status: http.StatusOK, contains: "tailwindcss", contentType: "text/css"},
-		{name: "importmap", method: http.MethodGet, path: "/assets/importmap.json", status: http.StatusOK, contains: `"/js/app.js"`, contentType: "application/json"},
-		{name: "missing file", method: http.MethodGet, path: "/missing.txt", status: http.StatusNotFound, contains: "404 page not found"},
-		{name: "unsupported method", method: http.MethodPost, path: "/posts", status: http.StatusMethodNotAllowed, contains: "Method Not Allowed"},
-		{name: "unsupported public method", method: http.MethodPost, path: "/styles.css", status: http.StatusMethodNotAllowed, contains: "Method Not Allowed"},
-	}
-
-	for _, test := range tests {
-		t.Run(test.name, func(t *testing.T) {
-			request := httptest.NewRequest(test.method, test.path, nil)
-			if test.accept != "" {
-				request.Header.Set("Accept", test.accept)
-			}
-			response := httptest.NewRecorder()
-			handler.ServeHTTP(response, request)
-
-			if response.Code != test.status {
-				t.Fatalf("status = %d, want %d; body: %s", response.Code, test.status, response.Body.String())
-			}
-			if !strings.Contains(response.Body.String(), test.contains) {
-				t.Fatalf("body %q does not contain %q", response.Body.String(), test.contains)
-			}
-			if test.contentType != "" && !strings.Contains(response.Header().Get("Content-Type"), test.contentType) {
-				t.Fatalf("Content-Type = %q, want %q", response.Header().Get("Content-Type"), test.contentType)
-			}
-			if test.status == http.StatusMethodNotAllowed && !strings.Contains(response.Header().Get("Allow"), http.MethodGet) {
-				t.Fatalf("Allow = %q, want it to contain %q", response.Header().Get("Allow"), http.MethodGet)
-			}
-		})
-	}
+	app.Check(
+		lazytest.Case{Name: "home", Method: http.MethodGet, Path: "/", Status: http.StatusOK, Contains: []string{"Hello, world!"}, ContentType: "text/html"},
+		lazytest.Case{Name: "posts", Method: http.MethodGet, Path: "/posts", Status: http.StatusOK, Contains: []string{"Hello, GoLazy"}, ContentType: "text/html"},
+		lazytest.Case{Name: "posts html suffix", Method: http.MethodGet, Path: "/posts.html", Status: http.StatusOK, Contains: []string{"Hello, GoLazy"}, ContentType: "text/html"},
+		lazytest.Case{Name: "posts markdown", Method: http.MethodGet, Path: "/posts", Headers: map[string][]string{"Accept": {"text/markdown"}}, Status: http.StatusOK, Contains: []string{"- [Hello, GoLazy](/posts/hello-golazy)"}, ContentType: "text/markdown"},
+		lazytest.Case{Name: "posts markdown suffix", Method: http.MethodGet, Path: "/posts.md", Headers: map[string][]string{"Accept": {"text/markdown"}}, Status: http.StatusOK, Contains: []string{"- [Hello, GoLazy](/posts/hello-golazy)"}, ContentType: "text/markdown"},
+		lazytest.Case{Name: "post", Method: http.MethodGet, Path: "/posts/hello-golazy", Status: http.StatusOK, Contains: []string{"<strong>GoLazy</strong>"}, ContentType: "text/html"},
+		lazytest.Case{Name: "post html suffix", Method: http.MethodGet, Path: "/posts/hello-golazy.html", Status: http.StatusOK, Contains: []string{"<strong>GoLazy</strong>"}, ContentType: "text/html"},
+		lazytest.Case{Name: "post markdown", Method: http.MethodGet, Path: "/posts/hello-golazy", Headers: map[string][]string{"Accept": {"text/markdown"}}, Status: http.StatusOK, Contains: []string{"Welcome to **GoLazy**"}, ContentType: "text/markdown"},
+		lazytest.Case{Name: "post markdown suffix", Method: http.MethodGet, Path: "/posts/hello-golazy.md", Headers: map[string][]string{"Accept": {"text/markdown"}}, Status: http.StatusOK, Contains: []string{"Welcome to **GoLazy**"}, ContentType: "text/markdown"},
+		lazytest.Case{Name: "post word count helper", Method: http.MethodGet, Path: "/posts/hello-golazy", Status: http.StatusOK, Contains: []string{"25 words"}, ContentType: "text/html"},
+		lazytest.Case{Name: "post read time helper", Method: http.MethodGet, Path: "/posts/hello-golazy", Status: http.StatusOK, Contains: []string{"1 min read"}, ContentType: "text/html"},
+		lazytest.Case{Name: "missing post", Method: http.MethodGet, Path: "/posts/missing", Status: http.StatusNotFound, Contains: []string{"Not Found"}},
+		lazytest.Case{Name: "public file", Method: http.MethodGet, Path: "/styles.css", Status: http.StatusOK, Contains: []string{"tailwindcss"}, ContentType: "text/css"},
+		lazytest.Case{Name: "importmap", Method: http.MethodGet, Path: "/assets/importmap.json", Status: http.StatusOK, Contains: []string{"\"/js/app.js\""}, ContentType: "application/json"},
+		lazytest.Case{Name: "missing file", Method: http.MethodGet, Path: "/missing.txt", Status: http.StatusNotFound, Contains: []string{"404 page not found"}},
+		lazytest.Case{Name: "unsupported method", Method: http.MethodPost, Path: "/posts", Status: http.StatusMethodNotAllowed, Contains: []string{"Method Not Allowed"}, Allow: []string{http.MethodGet}},
+		lazytest.Case{Name: "unsupported public method", Method: http.MethodPost, Path: "/styles.css", Status: http.StatusMethodNotAllowed, Contains: []string{"Method Not Allowed"}, Allow: []string{http.MethodGet}},
+	)
 }
 
 func TestApplicationUsesAssetPermalink(t *testing.T) {
-	handler := application()
+	app := lazytest.New(t, appinit.App())
 
-	response := httptest.NewRecorder()
-	handler.ServeHTTP(response, httptest.NewRequest(http.MethodGet, "/", nil))
-	if response.Code != http.StatusOK {
-		t.Fatalf("status = %d, want %d", response.Code, http.StatusOK)
-	}
-	if !strings.Contains(response.Body.String(), `<html lang="en" class="dark scheme-dark">`) {
-		t.Fatalf("home body does not enable Tailwind dark mode by default: %s", response.Body.String())
-	}
+	home := app.Get("/")
+	home.OK().
+		Contains(`<html lang="en" class="dark scheme-dark">`).
+		Contains(`<script type="importmap">`).
+		Contains(`import "/js/app.js"`)
 
-	matches := regexp.MustCompile(`href="(/styles-[a-f0-9]{12}\.css)"`).FindStringSubmatch(response.Body.String())
+	matches := home.Match(`href="(/styles-[a-f0-9]{12}\.css)"`)
 	if len(matches) != 2 {
-		t.Fatalf("home body does not contain fingerprinted stylesheet URL: %s", response.Body.String())
-	}
-	if !strings.Contains(response.Body.String(), `<script type="importmap">`) {
-		t.Fatalf("home body does not contain inline importmap: %s", response.Body.String())
-	}
-	if !strings.Contains(response.Body.String(), `import "/js/app.js"`) {
-		t.Fatalf("home body does not import app JavaScript: %s", response.Body.String())
+		t.Fatalf("home body does not contain fingerprinted stylesheet URL: %s", home.BodyString())
 	}
 
-	asset := httptest.NewRecorder()
-	handler.ServeHTTP(asset, httptest.NewRequest(http.MethodGet, matches[1], nil))
-	if asset.Code != http.StatusOK {
-		t.Fatalf("asset status = %d, want %d", asset.Code, http.StatusOK)
-	}
-	if got := asset.Header().Get("Cache-Control"); got != "public, max-age=31536000, immutable" {
-		t.Fatalf("asset Cache-Control = %q, want immutable cache policy", got)
-	}
+	app.Get(matches[1]).
+		OK().
+		HeaderEquals("Cache-Control", "public, max-age=31536000, immutable")
 }
 
 func TestApplicationJavaScriptImportmap(t *testing.T) {
-	handler := application()
+	app := lazytest.New(t, appinit.App())
 
-	response := httptest.NewRecorder()
-	handler.ServeHTTP(response, httptest.NewRequest(http.MethodGet, "/assets/importmap.json", nil))
-	if response.Code != http.StatusOK {
-		t.Fatalf("status = %d, want %d", response.Code, http.StatusOK)
-	}
-
-	var parsed struct {
+	parsed := struct {
 		Imports map[string]string `json:"imports"`
-	}
-	if err := json.Unmarshal(response.Body.Bytes(), &parsed); err != nil {
-		t.Fatalf("parse importmap: %v", err)
-	}
+	}{}
+	app.Get("/assets/importmap.json").OK().JSON(&parsed)
 
 	for specifier, prefix := range map[string]string{
 		"@hotwired/stimulus":                  "/assets/lazyshaft/stimulus-",
@@ -123,112 +67,52 @@ func TestApplicationJavaScriptImportmap(t *testing.T) {
 		"/js/app.js":                          "/assets/lazyshaft/app/app-",
 		"/js/controllers/hello_controller.js": "/assets/lazyshaft/app/controllers/hello_controller-",
 	} {
-		assetPath := parsed.Imports[specifier]
+		assetPath, ok := parsed.Imports[specifier]
+		if !ok {
+			t.Fatalf("importmap did not contain %q", specifier)
+		}
 		if !strings.HasPrefix(assetPath, prefix) {
 			t.Fatalf("importmap[%q] = %q, want prefix %q", specifier, assetPath, prefix)
 		}
-
-		asset := httptest.NewRecorder()
-		handler.ServeHTTP(asset, httptest.NewRequest(http.MethodGet, assetPath, nil))
-		if asset.Code != http.StatusOK {
-			t.Fatalf("%s status = %d, want %d", assetPath, asset.Code, http.StatusOK)
-		}
-		if !strings.Contains(asset.Header().Get("Content-Type"), "text/javascript") {
-			t.Fatalf("%s Content-Type = %q, want JavaScript", assetPath, asset.Header().Get("Content-Type"))
-		}
+		app.Get(assetPath).OK().ContentType("text/javascript")
 	}
 }
 
 func TestApplicationSessionsAndFlashes(t *testing.T) {
 	t.Setenv("SECURE_COOKIE_KEY", "sample_app_session_test_key")
 
-	handler := appinit.App()
+	browser := lazytest.New(t, appinit.App()).Client()
 
-	request := httptest.NewRequest(http.MethodGet, "/", nil)
-	response := httptest.NewRecorder()
-	handler.ServeHTTP(response, request)
-	if response.Code != http.StatusOK {
-		t.Fatalf("status = %d, want %d", response.Code, http.StatusOK)
-	}
-	cookies := response.Result().Cookies()
+	response := browser.Get("/")
+	response.OK().Contains("Visit count: 1")
+	cookies := response.Cookies()
 	if len(cookies) == 0 {
 		t.Fatal("expected session cookie after first visit")
 	}
-	if !strings.Contains(response.Body.String(), "Visit count: 1") {
-		t.Fatalf("visit count not initialized: %q", response.Body.String())
-	}
 
-	request = httptest.NewRequest(http.MethodGet, "/", nil)
-	for _, cookie := range cookies {
-		request.AddCookie(cookie)
-	}
-	response = httptest.NewRecorder()
-	handler.ServeHTTP(response, request)
-	cookies = response.Result().Cookies()
-	if response.Code != http.StatusOK {
-		t.Fatalf("status = %d, want %d", response.Code, http.StatusOK)
-	}
-	if !strings.Contains(response.Body.String(), "Visit count: 2") {
-		t.Fatalf("visit count did not persist to second request: %q", response.Body.String())
-	}
-
-	request = httptest.NewRequest(http.MethodGet, "/flash", nil)
-	for _, cookie := range cookies {
-		request.AddCookie(cookie)
-	}
-	response = httptest.NewRecorder()
-	handler.ServeHTTP(response, request)
-	if response.Code != http.StatusFound {
-		t.Fatalf("flash status = %d, want %d", response.Code, http.StatusFound)
-	}
-	cookies = response.Result().Cookies()
-
-	request = httptest.NewRequest(http.MethodGet, "/", nil)
-	for _, cookie := range cookies {
-		request.AddCookie(cookie)
-	}
-	response = httptest.NewRecorder()
-	handler.ServeHTTP(response, request)
-	if response.Code != http.StatusOK {
-		t.Fatalf("status = %d, want %d", response.Code, http.StatusOK)
-	}
-	if !strings.Contains(response.Body.String(), "Visit count: 3") {
-		t.Fatalf("visit count did not increment on flash redirect: %q", response.Body.String())
-	}
-	if !strings.Contains(response.Body.String(), "This is a sample flash message") {
-		t.Fatalf("flash message did not display: %q", response.Body.String())
-	}
-	cookies = response.Result().Cookies()
-
-	request = httptest.NewRequest(http.MethodGet, "/", nil)
-	for _, cookie := range cookies {
-		request.AddCookie(cookie)
-	}
-	response = httptest.NewRecorder()
-	handler.ServeHTTP(response, request)
-	if strings.Contains(response.Body.String(), "This is a sample flash message") {
-		t.Fatalf("flash message was not consumed after first display: %q", response.Body.String())
-	}
+	browser.Get("/").OK().Contains("Visit count: 2")
+	browser.Get("/flash").Status(http.StatusFound)
+	browser.Get("/").
+		OK().
+		Contains("Visit count: 4").
+		Contains("This is a sample flash message")
+	browser.Get("/").OK().
+		NotContains("This is a sample flash message")
 }
 
 func TestControllersHaveRequestLocalState(t *testing.T) {
-	handler := application()
+	app := lazytest.New(t, appinit.App())
 
 	var wait sync.WaitGroup
 	for range 20 {
 		wait.Add(1)
 		go func() {
 			defer wait.Done()
-			response := httptest.NewRecorder()
-			handler.ServeHTTP(response, httptest.NewRequest(http.MethodGet, "/posts", nil))
-			if response.Code != http.StatusOK {
-				t.Errorf("status = %d", response.Code)
+			response := app.Get("/posts")
+			if response.Result.StatusCode != http.StatusOK {
+				t.Errorf("status = %d", response.Result.StatusCode)
 			}
 		}()
 	}
 	wait.Wait()
-}
-
-func application() http.Handler {
-	return appinit.App()
 }

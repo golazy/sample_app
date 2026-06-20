@@ -29,21 +29,21 @@ runtime framework dependency.
 Create a local age identity:
 
 ```sh
-age-keygen -o secrets/development.agekey
-age-keygen -y secrets/development.agekey
+age-keygen -o .secrets/development.agekey
+age-keygen -y .secrets/development.agekey
 ```
 
 Use the printed public recipient to encrypt a development env file. Replace
 `age1example` with the recipient printed by `age-keygen`:
 
 ```sh
-sops --age age1example --encrypt secrets/development.env > secrets/development.sops.env
+sops --age age1example --encrypt .secrets/development.env > .secrets/development.sops.env
 ```
 
 Run the app from encrypted values:
 
 ```sh
-SOPS_AGE_KEY_FILE=secrets/development.agekey sops exec-env secrets/development.sops.env 'lazy'
+SOPS_AGE_KEY_FILE=.secrets/development.agekey sops exec-env .secrets/development.sops.env 'lazy'
 ```
 
 Do not commit age identity files, decrypted local env files, or production

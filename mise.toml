@@ -5,7 +5,7 @@ go = "1.26.0"
 "aqua:jdx/usage" = "latest"
 
 [env]
-_.file = "secrets/development.env"
+_.file = ".secrets/development.env"
 
 [tasks.dev]
 description = "Run the GoLazy development server with development secrets."

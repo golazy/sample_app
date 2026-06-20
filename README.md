@@ -69,16 +69,16 @@ ADDR=127.0.0.1:4000 go run ./cmd/app
 
 ## Development Secrets
 
-The sample app includes checked-in development values under `secrets/`.
+The sample app includes checked-in development values under `.secrets/`.
 `mise.toml` installs Go plus the `age`, `sops`, and `usage` tools, then loads
-`secrets/development.env` for commands run through mise.
+`.secrets/development.env` for commands run through mise.
 
 `SECURE_COOKIE_KEY` configures the session cookie signing key. In development
 the checked-in value is intentionally low ceremony. In production, the
 deployment environment is responsible for providing `SECURE_COOKIE_KEY` and any
 other application environment variables.
 
-See [secrets/README.md](secrets/README.md) for the SOPS and age workflow.
+See [.secrets/README.md](.secrets/README.md) for the SOPS and age workflow.
 
 ## Routes
 
@@ -120,7 +120,7 @@ init/                Application composition, dependencies, and routes
 js.toml              JavaScript library entrypoints for lazy js
 lib/markdown/        Markdown adapter
 mise.toml            Development toolchain and local env loading
-secrets/             Checked-in development secret examples
+.secrets/            Checked-in development secret examples
 test/                Application integration tests
 ```
 
@@ -131,9 +131,9 @@ controller instances for each request and resets mutable render state before
 reuse.
 
 `init/app.go` also configures cookie-backed sessions. The app reads
-`SECURE_COOKIE_KEY` from the environment, with a short development fallback in
-source so the sample can run without setup. `lazy new` replaces that fallback
-with fresh random key material for every generated app. The framework expands
+`SECURE_COOKIE_KEY` from the environment. In development, mise loads the
+checked-in example value from `.secrets/development.env`; production deployments
+provide their own value through the runtime environment. The framework expands
 short keys deterministically before signing cookies.
 
 Application helpers live in `app/helpers`. `init/app.go` registers them through
@@ -166,6 +166,21 @@ go test -race ./...
 go vet ./...
 go build -o /tmp/sample-app ./cmd/app
 ```
+
+## Docker
+
+Refresh generated assets before building the image:
+
+```sh
+lazy tailwind
+lazy js
+docker build -t sample-app .
+docker run --rm -p 127.0.0.1:3000:3000 sample-app
+```
+
+The image runs the compiled application with `ADDR=0.0.0.0:3000`.
+Provide production secrets such as `SECURE_COOKIE_KEY` through the container
+environment.
 
 ## License
 

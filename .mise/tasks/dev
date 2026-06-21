@@ -1,0 +1,5 @@
+#!/usr/bin/env bash
+#MISE description="Run the GoLazy development server with development secrets"
+set -euo pipefail
+
+lazy

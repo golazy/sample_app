@@ -48,6 +48,9 @@ project conventions that should apply to coding agents and automation.
 
 ## Commands
 
+Keep project-specific mise tasks as standalone scripts under `.mise/tasks`;
+`mise.toml` should stay focused on tool and environment configuration.
+
 Start the development server:
 
 ```sh

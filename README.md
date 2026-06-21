@@ -21,6 +21,8 @@ This repository is a small GoLazy application. It demonstrates:
 - Go 1.26 or later
 - Node.js and npm when regenerating JavaScript assets or Tailwind CSS
 
+The provided mise toolchain installs Go and Node.js for local development.
+
 When this repository is used inside the GoLazy workspace, the root `go.work`
 resolves `golazy.dev` to the sibling framework checkout. The module itself does
 not contain a local `replace` directive.
@@ -36,7 +38,8 @@ mise run dev
 ```
 
 `mise trust` is a one-time local approval for `mise.toml`; mise requires it
-because the config loads development environment variables.
+because the config loads development environment variables. Project tasks live
+as standalone scripts under `.mise/tasks`.
 
 The sample also includes a standalone Go task script:
 
@@ -70,8 +73,8 @@ ADDR=127.0.0.1:4000 go run ./cmd/app
 ## Development Secrets
 
 The sample app includes checked-in development values under `.secrets/`.
-`mise.toml` installs Go plus the `age`, `sops`, and `usage` tools, then loads
-`.secrets/development.env` for commands run through mise.
+`mise.toml` installs Go, Node.js, and the `age`, `sops`, and `usage` tools,
+then loads `.secrets/development.env` for commands run through mise.
 
 `SECURE_COOKIE_KEY` configures the session cookie signing key. In development
 the checked-in value is intentionally low ceremony. In production, the

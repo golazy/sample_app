@@ -1,0 +1,10 @@
+# Public age recipients allowed to decrypt development SOPS secrets.
+# Format: <user> <age-recipient>
+#
+# Create and register a local identity:
+#   mise run secrets:new-key -- alice
+#
+# Register a public recipient shared by another user:
+#   mise run secrets:add-key -- alice age1...
+guillermo age17x6u02ew4xepau70vt9dqddq2nk04kza6zt9stx5agk5zfyfxuls9tzfm2
+pepe age15c8vmhxg0ptnqy40g3k0v4345u3r6jhsgn904w5r2lpsyz8gnszstf8dva

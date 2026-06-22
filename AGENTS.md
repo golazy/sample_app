@@ -51,6 +51,13 @@ project conventions that should apply to coding agents and automation.
 
 Keep project-specific mise tasks as standalone scripts under `.mise/tasks`;
 `mise.toml` should stay focused on tool and environment configuration.
+Mise is the standard development environment for this app template, but do not
+add Go to `[tools]`; Go already bundles multi-version support through the
+module `go` directive and toolchain selection.
+Secret-recipient tasks live under `.mise/tasks/secrets` and share the
+`internal/secretkeys` parser. Keep public age recipients in
+`.secrets/recipients.txt`, keep generated `.sops.yaml` recipient rules
+committed, and keep private age identities under ignored `.secrets/keys`.
 
 Start the development server:
 

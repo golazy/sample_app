@@ -15,6 +15,8 @@ func TestApplicationRoutes(t *testing.T) {
 
 	app.Check(
 		lazytest.Case{Name: "home", Method: http.MethodGet, Path: "/", Status: http.StatusOK, Contains: []string{"Hello, world!"}, ContentType: "text/html"},
+		lazytest.Case{Name: "liveness probe", Method: http.MethodGet, Path: "/livez", Status: http.StatusOK, Contains: []string{"live"}, ContentType: "text/plain"},
+		lazytest.Case{Name: "readiness probe", Method: http.MethodGet, Path: "/readyz", Status: http.StatusOK, Contains: []string{"ready"}, ContentType: "text/plain"},
 		lazytest.Case{Name: "posts", Method: http.MethodGet, Path: "/posts", Status: http.StatusOK, Contains: []string{"Hello, GoLazy"}, ContentType: "text/html"},
 		lazytest.Case{Name: "posts html suffix", Method: http.MethodGet, Path: "/posts.html", Status: http.StatusOK, Contains: []string{"Hello, GoLazy"}, ContentType: "text/html"},
 		lazytest.Case{Name: "posts markdown", Method: http.MethodGet, Path: "/posts", Headers: map[string][]string{"Accept": {"text/markdown"}}, Status: http.StatusOK, Contains: []string{"- [Hello, GoLazy](/posts/hello-golazy)"}, ContentType: "text/markdown"},

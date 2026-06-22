@@ -6,6 +6,7 @@ node_modules/
 /.tmp/
 
 # Local secret material. Checked-in development examples live under .secrets/.
+.secrets/keys/
 .secrets/*.agekey
 .secrets/*.key
 .secrets/*.local.env

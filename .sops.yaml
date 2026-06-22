@@ -1,0 +1,4 @@
+# Managed by mise secrets:* tasks. Public user mappings live in .secrets/recipients.txt.
+creation_rules:
+  - path_regex: '^\.secrets/.*\.sops\.(env|json|yaml|yml)$'
+    age: age17x6u02ew4xepau70vt9dqddq2nk04kza6zt9stx5agk5zfyfxuls9tzfm2,age15c8vmhxg0ptnqy40g3k0v4345u3r6jhsgn904w5r2lpsyz8gnszstf8dva

@@ -26,7 +26,41 @@ The mise toolchain also installs `age`, `sops`, and `usage` so applications can
 move from checked-in examples to encrypted development secrets without adding a
 runtime framework dependency.
 
-Create a local age identity:
+Use the secrets tasks to create and manage age recipients:
+
+```sh
+mise run secrets:new-key -- alice
+mise run secrets:users
+mise run secrets:add-key -- bob age1...
+mise run secrets:remove-user -- bob
+```
+
+`secrets:new-key` writes a private identity under `.secrets/keys/`, registers
+the matching public recipient in `.secrets/recipients.txt`, and refreshes
+`.sops.yaml`. The key directory is ignored by Git. Commit `.secrets/recipients.txt`
+and `.sops.yaml` so teammates can see which users are configured for encrypted
+development secrets.
+
+To let another user share access, ask them to send only their public age
+recipient. They can print it from an existing private key:
+
+```sh
+age-keygen -y ~/.config/mise/age.txt
+```
+
+Then register the shared recipient:
+
+```sh
+mise run secrets:add-key -- bob age1...
+```
+
+After adding or removing recipients, update any existing encrypted SOPS files:
+
+```sh
+sops updatekeys -y .secrets/development.sops.yaml
+```
+
+You can still create an age identity manually when you need a custom path:
 
 ```sh
 age-keygen -o .secrets/development.agekey

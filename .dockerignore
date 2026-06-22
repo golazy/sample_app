@@ -5,3 +5,8 @@
 node_modules
 public
 tmp
+.secrets/keys/
+.secrets/*.agekey
+.secrets/*.key
+.secrets/*.local.env
+.secrets/*.plain.*

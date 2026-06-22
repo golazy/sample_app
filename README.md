@@ -17,11 +17,14 @@ This repository is a small GoLazy application. It demonstrates:
 
 ## Requirements
 
-- mise when using the provided development toolchain
 - Go 1.26 or later
-- Node.js and npm when regenerating JavaScript assets or Tailwind CSS
+- mise for the standard development environment
+- Node.js and npm when regenerating JavaScript assets or Tailwind CSS outside mise
 
-The provided mise toolchain installs Go and Node.js for local development.
+The provided mise toolchain installs Node.js and project CLI helpers for local
+development. Go is not installed through mise because Go already bundles
+multi-version support through the module `go` directive and toolchain
+selection.
 
 When this repository is used inside the GoLazy workspace, the root `go.work`
 resolves `golazy.dev` to the sibling framework checkout. The module itself does
@@ -73,8 +76,8 @@ ADDR=127.0.0.1:4000 go run ./cmd/app
 ## Development Secrets
 
 The sample app includes checked-in development values under `.secrets/`.
-`mise.toml` installs Go, Node.js, and the `age`, `sops`, and `usage` tools,
-then loads `.secrets/development.env` for commands run through mise.
+`mise.toml` installs Node.js and the `age`, `sops`, and `usage` tools, then
+loads `.secrets/development.env` for commands run through mise.
 
 `SECURE_COOKIE_KEY` configures the session cookie signing key. In development
 the checked-in value is intentionally low ceremony. In production, the
@@ -82,6 +85,9 @@ deployment environment is responsible for providing `SECURE_COOKIE_KEY` and any
 other application environment variables.
 
 See [.secrets/README.md](.secrets/README.md) for the SOPS and age workflow.
+It includes `secrets:new-key`, `secrets:add-key`, `secrets:remove-user`, and
+`secrets:users` tasks for managing the public recipients that can decrypt
+encrypted development secret files.
 
 ## Routes
 
@@ -123,7 +129,7 @@ js.toml              JavaScript library entrypoints for lazy js
 lib/markdown/        Markdown adapter
 mise.toml            Development toolchain and local env loading
 services/            Business services
-.secrets/            Checked-in development secret examples
+.secrets/            Checked-in development secret examples and public recipients
 test/                Application integration tests
 ```
 

@@ -5,6 +5,7 @@ import (
 	"time"
 
 	"golazy.dev/lazyapp"
+	"golazy.dev/lazycontrolplane"
 	"golazy.dev/lazyseo"
 	"golazy.dev/lazysession"
 	_ "golazy.dev/lazyview/gotmpl"
@@ -14,12 +15,13 @@ import (
 
 func App() *lazyapp.App {
 	return lazyapp.New(lazyapp.Config{
-		Name:    "sample_app",
-		Drawer:  Draw,
-		Public:  app.Public,
-		Views:   app.Views,
-		Context: Context,
-		Helpers: lazyapp.Helpers{helpers.RegisterHelpers()},
+		Name:         "sample_app",
+		Drawer:       Draw,
+		Public:       app.Public,
+		Views:        app.Views,
+		Context:      Context,
+		Helpers:      lazyapp.Helpers{helpers.RegisterHelpers()},
+		ControlPlane: lazycontrolplane.Config{},
 		SEO: []lazyseo.Option{
 			lazyseo.SiteName("GoLazy"),
 			lazyseo.Description("A small GoLazy sample application with embedded templates, assets, and Markdown posts."),

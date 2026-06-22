@@ -12,7 +12,7 @@ import (
 	"golazy.dev/lazycontroller"
 	"golazy.dev/lazyview"
 	_ "golazy.dev/lazyview/gotmpl"
-	"sample_app/app/services/timeservice"
+	"sample_app/services/timeservice"
 )
 
 type fixedTimeService struct {

@@ -7,7 +7,8 @@ project conventions that should apply to coding agents and automation.
 
 - Application code lives under `app`.
 - Controllers live in `app/controllers`.
-- Services live in `app/services`.
+- Business services live in top-level `services`, outside the web-facing
+  `app` tree.
 - Helpers live in `app/helpers` and are registered from `init/app.go`.
 - Views live in `app/views`; layouts live in `app/views/layouts`.
 - Public assets live in `app/public` and are embedded into production builds.

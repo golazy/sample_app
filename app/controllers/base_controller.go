@@ -6,7 +6,7 @@ import (
 
 	"golazy.dev/lazycontroller"
 	"golazy.dev/lazysession"
-	"sample_app/app/services/timeservice"
+	"sample_app/services/timeservice"
 )
 
 const visitCounterKey = "visit_count"

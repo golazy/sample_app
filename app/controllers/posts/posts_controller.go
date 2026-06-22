@@ -10,8 +10,8 @@ import (
 	"golazy.dev/lazycontroller"
 	"golazy.dev/lazyseo"
 	"sample_app/app/controllers"
-	postservice "sample_app/app/services/posts"
 	"sample_app/lib/markdown"
+	postservice "sample_app/services/posts"
 )
 
 var Markdown = lazycontroller.NewFormat(

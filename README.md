@@ -115,7 +115,6 @@ app/
   helpers/           Template helpers registered by the app
   js/                App JavaScript source for lazy js
   public/            Embedded public files and generated JavaScript assets
-  services/          Application services
   styles/            Tailwind input stylesheets when lazy tailwind is enabled
   views/             Layouts and templates
 cmd/app/             Application executable
@@ -123,6 +122,7 @@ init/                Application composition, dependencies, and routes
 js.toml              JavaScript library entrypoints for lazy js
 lib/markdown/        Markdown adapter
 mise.toml            Development toolchain and local env loading
+services/            Business services
 .secrets/            Checked-in development secret examples
 test/                Application integration tests
 ```

@@ -4,8 +4,8 @@ import (
 	"context"
 	"fmt"
 
-	postservice "sample_app/app/services/posts"
-	"sample_app/app/services/timeservice"
+	postservice "sample_app/services/posts"
+	"sample_app/services/timeservice"
 )
 
 // Context initializes the application dependencies and adds them to ctx.

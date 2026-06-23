@@ -9,14 +9,13 @@ import (
 )
 
 // Context initializes the application dependencies and adds them to ctx.
-// Embedded resource failures are programming errors, so startup fails fast.
-func Context(ctx context.Context) context.Context {
+func Context(ctx context.Context) (context.Context, error) {
 	posts, err := postservice.New()
 	if err != nil {
-		panic(fmt.Errorf("initialize posts service: %w", err))
+		return ctx, fmt.Errorf("initialize posts service: %w", err)
 	}
 
 	ctx = timeservice.WithContext(ctx, timeservice.New())
 	ctx = postservice.WithContext(ctx, posts)
-	return ctx
+	return ctx, nil
 }

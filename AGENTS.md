@@ -13,12 +13,12 @@ project conventions that should apply to coding agents and automation.
 - Views live in `app/views`; layouts live in `app/views/layouts`.
 - Public assets live in `app/public` and are embedded into production builds.
 - The executable entrypoint is `cmd/app`.
-- Application composition lives in `init`: context, routes, and app config.
+- Application composition lives in `init`: dependencies, routes, and app config.
 - HTTP integration tests belong in `test`.
 
 ## GoLazy Conventions
 
-- Initialize shared dependencies once through `init.Context`.
+- Initialize shared dependencies once through `init.Dependencies`.
 - Register routes only through `func Draw(router *lazyroutes.Scope)` in
   `init/routes.go`.
 - Controller constructors should receive only `context.Context` and return

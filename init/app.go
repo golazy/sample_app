@@ -19,7 +19,7 @@ func App() *lazyapp.App {
 		Drawer:       Draw,
 		Public:       app.Public,
 		Views:        app.Views,
-		Context:      Context,
+		Dependencies: Dependencies,
 		Helpers:      lazyapp.Helpers{helpers.RegisterHelpers()},
 		ControlPlane: lazycontrolplane.Config{},
 		SEO: []lazyseo.Option{

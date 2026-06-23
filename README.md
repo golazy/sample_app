@@ -133,7 +133,7 @@ services/            Business services
 test/                Application integration tests
 ```
 
-Shared dependencies are initialized once in `init/context.go`. Routes are
+Shared dependencies are initialized once in `init/dependencies.go`. Routes are
 registered in `init/routes.go`. The application is assembled in `init/app.go`.
 Routes construct controller prototypes at app startup. GoLazy borrows pooled
 controller instances for each request and resets mutable render state before

@@ -74,8 +74,12 @@ ADDR=127.0.0.1:4000 go run ./cmd/app
 
 ## Development Secrets
 
-The sample app keeps secret-shaped checked-in development examples in
-`.secrets/development.env`, such as `SAMPLE_APP_DEVELOPMENT_SECRET`.
+The sample app demonstrates two classes of development environment values:
+
+- Ordinary checked-in values live directly in `mise.toml`, such as
+  `SAMPLE_APP_ENV`.
+- Secret-shaped checked-in examples live in `.secrets/development.env`, such as
+  `SAMPLE_APP_DEVELOPMENT_SECRET`.
 
 Production secrets should come from the deployment environment.
 

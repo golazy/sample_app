@@ -1,5 +1,0 @@
-#!/usr/bin/env bash
-#MISE description="Run the sample app tests"
-set -euo pipefail
-
-go test ./...

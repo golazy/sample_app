@@ -6,10 +6,9 @@ project conventions that should apply to coding agents and automation.
 ## Project Shape
 
 - Application code lives under `app`.
-- Controllers live in `app/controllers`.
+- The sample route is handled by `app/controllers/home_controller.go`.
 - Business services live in top-level `services`, outside the web-facing
   `app` tree.
-- Helpers live in `app/helpers` and are registered from `init/app.go`.
 - Views live in `app/views`; layouts live in `app/views/layouts`.
 - Public assets live in `app/public` and are embedded into production builds.
 - The executable entrypoint is `cmd/app`.
@@ -30,19 +29,25 @@ project conventions that should apply to coding agents and automation.
   materially simplify the action.
 - Use `Set("name", value)` for template data. Template data is escaped by
   default; only trusted framework-generated HTML should become `template.HTML`.
-- Keep production secrets out of source. Session keys should come from the
-  environment once the app is configured for production.
+- Keep production secrets out of source. Put ordinary checked-in development
+  values in `mise.toml` and secret-shaped checked-in examples in
+  `.secrets/development.env`.
 
 ## Assets
 
 - App-owned browser JavaScript source lives in `app/js`. The main entry is
   `app/js/app.js`; Stimulus controllers live under `app/js/controllers`.
+  The default entry imports Hotwire Turbo and Stimulus through
+  `// golazy:turbo` and `// golazy:stimulus`, with matching entrypoints in
+  `js.toml`.
 - `lazy js` manages JavaScript assets from `js.toml`, `package.json`,
   and the lockfile, expands GoLazy directives in `app/js/app.js`, and bundles
   app JavaScript into `app/public/assets/lazyshaft`. Commit generated
   importmaps and `app/public/assets` outputs, but do not commit `node_modules`.
 - Tailwind source lives in `app/styles/application.css`.
 - `lazy tailwind` compiles the public stylesheet at `app/public/styles.css`.
+- Keep sample app styling in Tailwind utility classes rather than custom CSS;
+  `app/styles/application.css` should normally stay as the Tailwind import.
 - Do not edit generated importmaps, lazyshaft bundles, or compiled CSS by hand
   when the source manifest, package files, or Tailwind source should be changed
   instead.
@@ -54,10 +59,12 @@ Keep project-specific mise tasks as standalone scripts under `.mise/tasks`;
 Mise is the standard development environment for this app template, but do not
 add Go to `[tools]`; Go already bundles multi-version support through the
 module `go` directive and toolchain selection.
-Secret-recipient tasks live under `.mise/tasks/secrets` and share the
-`internal/secretkeys` parser. Keep public age recipients in
-`.secrets/recipients.txt`, keep generated `.sops.yaml` recipient rules
-committed, and keep private age identities under ignored `.secrets/keys`.
+Secret-recipient tasks live under `.mise/tasks/secrets`. Shared shell helpers
+for that task namespace may live beside them as hidden support files such as
+`.mise/tasks/secrets/_lib.sh`; do not add a separate `.mise/scripts`
+convention. Keep public age recipients in `.secrets/recipients.txt`, keep
+generated `.sops.yaml` recipient rules committed, and keep private age
+identities under ignored `.secrets/keys`.
 
 Start the development server:
 

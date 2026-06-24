@@ -1,24 +1,25 @@
 # Development Secrets
 
-This directory is for sample app development secrets. The checked-in
-`development.env` file contains example development values so a new checkout can
-run without external setup.
+This directory is for sample app development secrets. Ordinary checked-in
+development values live in `mise.toml`; the checked-in `development.env` file
+contains secret-shaped example values so a new checkout can see where
+development secrets belong.
 
 `mise.toml` loads `development.env` when commands run through mise:
 
 ```sh
 mise trust
 mise install
-mise run dev
-mise exec -- go test ./...
+mise exec -- lazy
+go test ./...
 ```
 
 `mise trust` is a one-time local approval because this project config loads an
 environment file.
 
-The app reads normal environment variables. `SECURE_COOKIE_KEY` configures the
-cookie signing key during development, and production should provide that same
-variable through the deployment environment.
+The app reads normal environment variables. Keep checked-in secret-shaped values
+suitable for local examples only, and provide production secrets through the
+deployment environment.
 
 ## SOPS And Age
 
@@ -34,6 +35,10 @@ mise run secrets:users
 mise run secrets:add-key -- bob age1...
 mise run secrets:remove-user -- bob
 ```
+
+The task files under `.mise/tasks/secrets` are thin wrappers around the hidden
+support script at `.mise/tasks/secrets/_lib.sh`, so this development workflow
+stays in the task namespace and out of the application Go packages.
 
 `secrets:new-key` writes a private identity under `.secrets/keys/`, registers
 the matching public recipient in `.secrets/recipients.txt`, and refreshes

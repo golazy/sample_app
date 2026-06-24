@@ -3,15 +3,13 @@
 This repository is a small GoLazy application. It demonstrates:
 
 - application dependencies initialized through `context.Context`
-- pooled controller instances with request-local render state
-- application helpers registered with the view renderer
-- secure cookie session configuration through `lazyapp.Config.Sessions`
-- embedded production views, local development views, public files, and
-  Markdown posts
+- one small service, `helloworldservice`, used by the home controller
+- one resource-backed application route at `/`
+- embedded production views, local development views, and public files
 - fingerprinted asset URLs through `asset_path`, immutable cache policy for
   permanent asset URLs, and asset ETags
-- Tailwind stylesheet compilation through `lazy tailwind`
-- JavaScript library and app-module bundling through `lazy js`
+- Tailwind utility-class styling compiled through `lazy tailwind`
+- Hotwire Turbo and Stimulus controller bundling through `lazy js`
 - application-level HTTP integration tests
 - single-binary deployment
 
@@ -37,7 +35,7 @@ With mise installed:
 ```sh
 mise trust
 mise install
-mise run dev
+mise exec -- lazy
 ```
 
 `mise trust` is a one-time local approval for `mise.toml`; mise requires it
@@ -51,7 +49,8 @@ mise run hello
 ```
 
 Mise discovers `hello` from `.mise/tasks/hello.go`. This is an example of using
-Go for small project scripts without adding another command to `mise.toml`.
+Go for small project scripts without adding another command to `mise.toml`; it
+exists to teach the pattern, not because the sample app needs a helper command.
 
 With the GoLazy CLI installed:
 
@@ -75,19 +74,21 @@ ADDR=127.0.0.1:4000 go run ./cmd/app
 
 ## Development Secrets
 
-The sample app includes checked-in development values under `.secrets/`.
-`mise.toml` installs Node.js and the `age`, `sops`, and `usage` tools, then
-loads `.secrets/development.env` for commands run through mise.
+The sample app demonstrates two classes of development environment values:
 
-`SECURE_COOKIE_KEY` configures the session cookie signing key. In development
-the checked-in value is intentionally low ceremony. In production, the
-deployment environment is responsible for providing `SECURE_COOKIE_KEY` and any
-other application environment variables.
+- Ordinary checked-in values live directly in `mise.toml`, such as
+  `SAMPLE_APP_ENV`.
+- Secret-shaped checked-in examples live in `.secrets/development.env`, such as
+  `SAMPLE_APP_DEVELOPMENT_SECRET`.
+
+Production secrets should come from the deployment environment.
 
 See [.secrets/README.md](.secrets/README.md) for the SOPS and age workflow.
 It includes `secrets:new-key`, `secrets:add-key`, `secrets:remove-user`, and
 `secrets:users` tasks for managing the public recipients that can decrypt
-encrypted development secret files.
+encrypted development secret files. The task wrappers delegate to
+`.mise/tasks/secrets/_lib.sh`, keeping development-secret tooling with the
+task namespace and separate from application Go code.
 
 ## Routes
 
@@ -100,33 +101,26 @@ lazy routes
 | Method | Path               | Description                   |
 |--------|--------------------|-------------------------------|
 | `GET`  | `/`                | Home page                     |
-| `GET`  | `/posts`           | List embedded posts as HTML or Markdown |
-| `GET`  | `/posts/{post_id}` | Render an embedded post as HTML or Markdown |
 | `GET`  | `/styles.css`      | Serve an embedded public asset |
 | `GET`  | `/styles-*.css`    | Serve a fingerprinted asset permalink |
 | `GET`  | `/assets/importmap.json` | Serve the generated JavaScript importmap |
 
 Other embedded public files are served from the application root. Templates can
 use `asset_path` to link the permanent hashed URL for cacheable assets.
-Send `Accept: text/markdown`, request `/posts.md`, or request
-`/posts/{post_id}.md` to receive the raw embedded Markdown instead of the HTML
-page. The `.html` suffix keeps the normal HTML rendering.
 
 ## Project Structure
 
 ```text
 .mise/tasks/         Standalone mise task scripts
 app/
-  controllers/       Controllers and request-local render hooks
-  helpers/           Template helpers registered by the app
+  controllers/       Home controller
   js/                App JavaScript source for lazy js
   public/            Embedded public files and generated JavaScript assets
-  styles/            Tailwind input stylesheets when lazy tailwind is enabled
+  styles/            Tailwind input stylesheet
   views/             Layouts and templates
 cmd/app/             Application executable
 init/                Application composition, dependencies, and routes
 js.toml              JavaScript library entrypoints for lazy js
-lib/markdown/        Markdown adapter
 mise.toml            Development toolchain and local env loading
 services/            Business services
 .secrets/            Checked-in development secret examples and public recipients
@@ -139,15 +133,8 @@ Routes construct controller prototypes at app startup. GoLazy borrows pooled
 controller instances for each request and resets mutable render state before
 reuse.
 
-`init/app.go` also configures cookie-backed sessions. The app reads
-`SECURE_COOKIE_KEY` from the environment. In development, mise loads the
-checked-in example value from `.secrets/development.env`; production deployments
-provide their own value through the runtime environment. The framework expands
-short keys deterministically before signing cookies.
-
-Application helpers live in `app/helpers`. `init/app.go` registers them through
-`lazyapp.Config.Helpers`, and the post view uses `word_count` and `read_time`
-to render Markdown metadata.
+`init/dependencies.go` registers `helloworldservice`. The home controller reads
+that service from context and uses `Hello()` as the page title.
 
 Controller views live at:
 
@@ -188,8 +175,8 @@ docker run --rm -p 127.0.0.1:3000:3000 sample-app
 ```
 
 The image runs the compiled application with `ADDR=0.0.0.0:3000`.
-Provide production secrets such as `SECURE_COOKIE_KEY` through the container
-environment.
+Pass runtime environment variables through the container environment when the
+application grows to need them.
 
 ## License
 

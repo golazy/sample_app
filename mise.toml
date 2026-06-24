@@ -5,5 +5,4 @@ node = "24"
 "aqua:jdx/usage" = "latest"
 
 [env]
-SAMPLE_APP_ENV = "development"
 _.file = ".secrets/development.env"

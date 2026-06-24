@@ -27,7 +27,7 @@
           <span class="h-3 w-3 rounded-full bg-[#ce3262]"></span>
           <span class="h-3 w-3 rounded-full bg-[#fddd00]"></span>
           <span class="h-3 w-3 rounded-full bg-[#00add8]"></span>
-          <span class="ml-auto font-mono text-xs text-[#f7f4eb]/70">home_controller.go</span>
+          <span class="ml-auto font-mono text-xs text-[#f7f4eb]/70">homecontroller.go</span>
         </div>
         <pre class="overflow-x-auto p-4 font-mono text-sm leading-7 text-[#f7f4eb]"><code><span class="text-[#ce3262]">func</span> (c *HomeController) <span class="text-[#00add8]">Index</span>() error {
   c.<span class="text-[#00add8]">Set</span>(<span class="text-[#fddd00]">"title"</span>, c.helloService.<span class="text-[#00add8]">Hello</span>())

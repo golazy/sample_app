@@ -113,7 +113,7 @@ use `asset_path` to link the permanent hashed URL for cacheable assets.
 ```text
 .mise/tasks/         Standalone mise task scripts
 app/
-  controllers/       Home controller
+  controllers/       Shared base controller and concrete controller packages
   js/                App JavaScript source for lazy js
   public/            Embedded public files and generated JavaScript assets
   styles/            Tailwind input stylesheet
@@ -147,6 +147,10 @@ Layouts live at:
 ```text
 app/views/layouts/<layout>.html.tpl
 ```
+
+The framework supplies the shared `app/error` view. Add
+`app/views/app/error.html.tpl` only when the sample app should demonstrate an
+application-specific error page override.
 
 Production builds embed views into the binary. The GoLazy CLI runs the app with
 the `lazydev` build tag so templates are read from disk during local

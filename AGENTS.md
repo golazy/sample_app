@@ -6,7 +6,9 @@ project conventions that should apply to coding agents and automation.
 ## Project Shape
 
 - Application code lives under `app`.
-- The sample route is handled by `app/controllers/home_controller.go`.
+- Shared controller behavior lives in `app/controllers/base_controller.go`.
+- Concrete controllers live in package directories under `app/controllers`;
+  the sample route is handled by `app/controllers/home_controller/homecontroller.go`.
 - Business services live in top-level `services`, outside the web-facing
   `app` tree.
 - Views live in `app/views`; layouts live in `app/views/layouts`.
@@ -22,6 +24,11 @@ project conventions that should apply to coding agents and automation.
   `init/routes.go`.
 - Controller constructors should receive only `context.Context` and return
   `(*Controller, error)`.
+- Concrete controllers should embed `controllers.BaseController` so shared
+  behavior stays consistent. Add `app/views/app/error.html.tpl` only when this
+  app should override the framework default error page.
+- The home route sets `title` from `c.helloService.Hello()` and renders the
+  sample home view.
 - Controllers are request-local. Do not share mutable render state between
   requests.
 - Controller actions should return `error`; use the standard

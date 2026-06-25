@@ -1,9 +1,9 @@
 <!doctype html>
-<html lang="{{seo_lang}}">
+<html lang="en">
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    {{seo}}
+    <title>{{if .title}}{{.title}} - {{end}}GoLazy Sample App</title>
     {{stylesheet "/styles.css"}}
     {{importmap "/assets/importmap.json"}}
     <script type="module">import "/js/app.js"</script>

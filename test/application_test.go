@@ -14,11 +14,12 @@ func TestApplicationRoutes(t *testing.T) {
 
 	app.Check(
 		lazytest.Case{Name: "home", Method: http.MethodGet, Path: "/", Status: http.StatusOK, Contains: []string{"Hello", "helloworldservice", "data-controller=\"hello\""}, ContentType: "text/html"},
-		lazytest.Case{Name: "liveness probe", Method: http.MethodGet, Path: "/livez", Status: http.StatusOK, Contains: []string{"live"}, ContentType: "text/plain"},
-		lazytest.Case{Name: "readiness probe", Method: http.MethodGet, Path: "/readyz", Status: http.StatusOK, Contains: []string{"ready"}, ContentType: "text/plain"},
 		lazytest.Case{Name: "public file", Method: http.MethodGet, Path: "/styles.css", Status: http.StatusOK, Contains: []string{"tailwindcss"}, ContentType: "text/css"},
 		lazytest.Case{Name: "importmap", Method: http.MethodGet, Path: "/assets/importmap.json", Status: http.StatusOK, Contains: []string{"\"/js/app.js\""}, ContentType: "application/json"},
 		lazytest.Case{Name: "missing file", Method: http.MethodGet, Path: "/missing.txt", Status: http.StatusNotFound, Contains: []string{"404 page not found"}},
+		lazytest.Case{Name: "liveness probe opt-in", Method: http.MethodGet, Path: "/livez", Status: http.StatusNotFound, Contains: []string{"404 page not found"}},
+		lazytest.Case{Name: "readiness probe opt-in", Method: http.MethodGet, Path: "/readyz", Status: http.StatusNotFound, Contains: []string{"404 page not found"}},
+		lazytest.Case{Name: "sitemap opt-in", Method: http.MethodGet, Path: "/sitemap.xml", Status: http.StatusNotFound, Contains: []string{"404 page not found"}},
 		lazytest.Case{Name: "missing route below root", Method: http.MethodGet, Path: "/posts", Status: http.StatusNotFound, Contains: []string{"404 page not found"}},
 		lazytest.Case{Name: "unsupported method", Method: http.MethodPost, Path: "/", Status: http.StatusMethodNotAllowed, Contains: []string{"Method Not Allowed"}, Allow: []string{http.MethodGet}},
 		lazytest.Case{Name: "unsupported public method", Method: http.MethodPost, Path: "/styles.css", Status: http.StatusMethodNotAllowed, Contains: []string{"Method Not Allowed"}, Allow: []string{http.MethodGet}},

@@ -1,8 +1,5 @@
 node_modules/
-/build-*.json
-/.hugo_build.lock
-/public/
-/.tmp/
+.tmp
 
 # Local secret material. Checked-in development examples live under .secrets/.
 .secrets/keys/

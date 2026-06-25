@@ -4,7 +4,7 @@ WORKDIR /src
 
 COPY . .
 RUN go mod download
-RUN CGO_ENABLED=0 go build -buildvcs=false -o /out/sample-app ./cmd/app
+RUN go build -buildvcs=false -o /out/sample-app ./cmd/app
 
 FROM alpine:3.22
 

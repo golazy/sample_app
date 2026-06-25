@@ -1,5 +1,4 @@
 node_modules/
-/asdf
 /build-*.json
 /.hugo_build.lock
 /public/

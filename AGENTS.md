@@ -106,8 +106,9 @@ put lifecycle tasks under `.mise/tasks/<service>/`:
 
 Use `lazy.toml` to list services only when the app needs explicit service order
 or selection. Otherwise `lazy` discovers services from `:start` task files.
-When services exist, `lazy` starts service panes, waits for `check`, runs
-`create` and `migrate`, and then starts the app.
+When services exist, `lazy` starts them as managed subprocesses, waits for
+`check`, runs `create` and `migrate`, and then starts the app. Ctrl-C stops the
+app first and then the managed services.
 
 Start the development server:
 

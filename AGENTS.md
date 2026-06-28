@@ -16,6 +16,8 @@ project conventions that should apply to coding agents and automation.
 - The executable entrypoint is `cmd/app`.
 - Application composition lives in `init`: dependencies, routes, and app config.
 - HTTP integration tests belong in `test`.
+- Optional local datasets live under `datasets/<name>/<service>.dump` when this
+  app has development services with dump/load tasks.
 
 ## GoLazy Conventions
 
@@ -39,6 +41,20 @@ project conventions that should apply to coding agents and automation.
 - Keep production secrets out of source. Put ordinary checked-in development
   values in `mise.toml` and secret-shaped checked-in examples in
   `.secrets/development.env`.
+
+## Guide Contract
+
+This repository is the template for `lazy new`. Keep these instructions aligned
+with the latest GoLazy Development guides: QuickStart for app shape, Mise for
+tools/env/secrets/tasks, Lazy for the development loop, Services for local
+service lifecycle, and Datasets for data snapshots.
+
+Keep `AGENTS.md` as the concise shared source for generated-app guidance. If a
+workflow grows too large for this file, split it into the current skill layout:
+one `.skills/<name>/SKILL.md` entrypoint per workflow, with optional
+`references/`, `scripts/`, `templates/`, or `examples/` folders beside it.
+When `.skills/` exists, inspect `.skills/*/SKILL.md` before task-specific work
+and use the matching skill instead of duplicating the workflow here.
 
 ## Assets
 
@@ -66,12 +82,32 @@ Keep project-specific mise tasks as standalone scripts under `.mise/tasks`;
 Mise is the standard development environment for this app template, but do not
 add Go to `[tools]`; Go already bundles multi-version support through the
 module `go` directive and toolchain selection.
+Use committed `mise.toml` values for shared development defaults. Use
+`mise.local.toml` or ignored env files for machine-specific ports, paths, and
+experiments.
 Secret-recipient tasks live under `.mise/tasks/secrets`. Shared shell helpers
 for that task namespace may live beside them as hidden support files such as
 `.mise/tasks/secrets/_lib.sh`; do not add a separate `.mise/scripts`
 convention. Keep public age recipients in `.secrets/recipients.txt`, keep
 generated `.sops.yaml` recipient rules committed, and keep private age
 identities under ignored `.secrets/keys`.
+
+When this app adds a local development service such as PostgreSQL or MinIO,
+put lifecycle tasks under `.mise/tasks/<service>/`:
+
+```text
+<service>:start    # run in the foreground; Ctrl-C stops it
+<service>:check    # exit 0 only when the service is ready
+<service>:create   # create the local database, bucket, or schema if missing
+<service>:migrate  # apply pending migrations
+<service>:dump     # receive one output path
+<service>:load     # receive one input path
+```
+
+Use `lazy.toml` to list services only when the app needs explicit service order
+or selection. Otherwise `lazy` discovers services from `:start` task files.
+When services exist, `lazy` starts service panes, waits for `check`, runs
+`create` and `migrate`, and then starts the app.
 
 Start the development server:
 
@@ -89,6 +125,13 @@ Inspect routes:
 
 ```sh
 lazy routes
+```
+
+Create or restore a local dataset when service dump/load tasks exist:
+
+```sh
+lazy dump baseline
+lazy load baseline
 ```
 
 Regenerate assets when inputs change:

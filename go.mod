@@ -2,7 +2,7 @@ module sample_app
 
 go 1.26.2
 
-require golazy.dev v0.1.16
+require golazy.dev v0.1.17
 
 require (
 	github.com/cespare/xxhash/v2 v2.3.0 // indirect

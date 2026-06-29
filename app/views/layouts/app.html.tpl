@@ -6,7 +6,7 @@
     <title>{{if .title}}{{.title}} - {{end}}GoLazy Sample App</title>
     {{stylesheet "/styles.css"}}
     {{importmap "/assets/importmap.json"}}
-    <script type="module">import "/js/app.js"</script>
+    <script type="module">import "app.js"</script>
   </head>
   <body class="min-h-screen bg-[#f7f4eb] text-[#080808] antialiased">
     {{.content}}

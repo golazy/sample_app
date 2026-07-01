@@ -111,6 +111,7 @@ use `asset_path` to link the permanent hashed URL for cacheable assets.
 ## Project Structure
 
 ```text
+.skills/             Agent-facing GoLazy framework skill and references
 .mise/tasks/         Standalone mise task scripts
 app/
   controllers/       Shared base controller and concrete controller packages
@@ -129,9 +130,12 @@ test/                Application integration tests
 
 Shared dependencies are initialized once in `init/dependencies.go`. Routes are
 registered in `init/routes.go`. The application is assembled in `init/app.go`.
-Routes construct controller prototypes at app startup. GoLazy borrows pooled
-controller instances for each request and resets mutable render state before
-reuse.
+Routes point at controller constructors. GoLazy creates request-local
+controllers so mutable render state stays isolated to one request.
+
+Agent-facing framework notes live in `.skills/golazy-framework`. They explain
+where routes, controllers, services, views, assets, sessions, jobs, mailers,
+storage, and tests belong when extending a GoLazy application.
 
 `init/dependencies.go` registers `helloworldservice`. The home controller reads
 that service from context and uses `Hello()` as the page title.
@@ -164,7 +168,8 @@ lazy js
 go test ./...
 go test -race ./...
 go vet ./...
-go build -o /tmp/sample-app ./cmd/app
+mkdir -p .tmp
+go build -o .tmp/sample-app ./cmd/app
 ```
 
 ## Docker

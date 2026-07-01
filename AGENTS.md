@@ -55,6 +55,9 @@ one `.skills/<name>/SKILL.md` entrypoint per workflow, with optional
 `references/`, `scripts/`, `templates/`, or `examples/` folders beside it.
 When `.skills/` exists, inspect `.skills/*/SKILL.md` before task-specific work
 and use the matching skill instead of duplicating the workflow here.
+Use `.skills/golazy-framework/SKILL.md` before adding framework-shaped
+application behavior such as routes, controllers, services, views, assets,
+sessions, jobs, mailers, storage, or tests.
 
 ## Assets
 

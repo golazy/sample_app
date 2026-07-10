@@ -101,6 +101,28 @@ setting a `CurrentUser` string in `BeforeAction`.
 Return `lazycontroller.Error(status, err)` for expected HTTP failures such as
 missing records or forbidden actions. Unexpected errors become `500`.
 
+When the condition comes from a helper or service, return a typed or sentinel
+error and let the application base controller decide the response:
+
+```go
+var ErrNotFound = errors.New("not found")
+
+func (c *BaseController) HandleError(
+	w http.ResponseWriter,
+	r *http.Request,
+	err error,
+) error {
+	if errors.Is(err, ErrNotFound) {
+		err = lazycontroller.Error(http.StatusNotFound, err)
+	}
+	return c.Base.HandleError(w, r, err)
+}
+```
+
+Helpers should not render content or write `404` responses directly. They
+should return errors such as `ErrNotFound`; `HandleError` owns the mapping to
+status codes, redirects, or custom error views.
+
 Add `app/views/app/error.html.tpl` only when the app needs to override the
 framework default error page.
 

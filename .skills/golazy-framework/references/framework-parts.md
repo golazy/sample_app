@@ -44,6 +44,11 @@ the composition layer, then relies on a few focused packages indirectly.
 
 ## State, Messaging, And Storage
 
+- `lazyauth`: authentication contracts and app auth context. `lazyapp.New`
+  includes it by default with an in-memory backend that has zero users unless
+  `LAZYAUTH_DEFAULT_PASS` creates a bootstrap `admin` user. Set
+  `LAZYAUTH_DEFAULT_USER` to use a different username, or provide
+  `lazyapp.Config.Auth` for file, PostgreSQL, SSO, or app-specific auth.
 - `lazysession`: signed cookie or custom-store sessions plus flash messages.
   Enable it through `lazyapp.Config.Sessions`.
 - `lazymailer`: renders email views with `lazyview` and sends MIME messages

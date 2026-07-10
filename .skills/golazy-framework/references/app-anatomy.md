@@ -26,9 +26,13 @@ The convention is useful because `lazyapp`, `lazyroutes`, `lazycontroller`,
 2. `init/app.go` passes app name, route drawer, embedded views, embedded public
    files, and dependencies to `lazyapp.New`.
 3. `lazyapp.New` initializes the dependency scope and app context.
-4. `lazyapp.New` registers helpers, opens the view renderer, registers public
+4. `lazyapp.New` installs the app `lazyauth` config. Without `Config.Auth`, the
+   default in-memory backend starts with zero users; `LAZYAUTH_DEFAULT_PASS`
+   creates a bootstrap `admin` user, and `LAZYAUTH_DEFAULT_USER` changes that
+   username.
+5. `lazyapp.New` registers helpers, opens the view renderer, registers public
    assets, builds the route scope, and calls `Draw`.
-5. Requests first try dynamic application routes. Public files are served as
+6. Requests first try dynamic application routes. Public files are served as
    the final application fallback.
 
 ## Where To Put Features

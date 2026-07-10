@@ -84,6 +84,10 @@ routes, sessions, rendering, assets, or redirects.
 ## Common Extensions
 
 - Config: use `lazyconfig` for typed environment-backed config structs.
+- Auth: `lazyapp.New` always stores a `lazyauth.Config` in app context. Read it
+  with `lazyauth.ConfigFromContext(ctx)` when a controller or service should
+  authenticate against the app backend. The default backend is in-memory with
+  zero users unless `LAZYAUTH_DEFAULT_PASS` seeds the bootstrap user.
 - Sessions: enable `lazyapp.Config.Sessions`, then use `lazysession.Get(r)` in
   handlers that need browser state or flash messages.
 - Mail: initialize a `lazymailer.Mailer` and app-specific mailer services from

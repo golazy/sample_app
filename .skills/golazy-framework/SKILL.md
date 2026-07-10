@@ -22,7 +22,8 @@ belongs before editing code.
 - `references/app-anatomy.md`: generated app directories, startup flow, and
   where new files usually belong.
 - `references/controllers-routing-views.md`: route declarations, controller
-  constructors, action methods, template data, layouts, errors, and helpers.
+  constructors, action methods, generator arguments, template data, layouts,
+  errors, and helpers.
 - `references/services-context.md`: top-level services, typed context helpers,
   dependency initialization, shared state, and service tests.
 - `references/assets-development.md`: embedded public files, Tailwind, lazy js,

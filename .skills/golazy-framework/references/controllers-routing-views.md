@@ -52,6 +52,50 @@ Use `c.Status`, `c.Header`, and `c.ContentType` to set metadata before the
 automatic render. Use the raw `http.ResponseWriter` only when the action owns
 the whole response body.
 
+## Generated Action Arguments
+
+Use generator arguments when an action should receive a typed request-derived
+value instead of reading untyped state from the controller:
+
+```go
+type User struct {
+	ID string
+}
+
+func (c *BaseController) GenUser(
+	ctx context.Context,
+	r *http.Request,
+) (User, error) {
+	user, err := userFromSession(ctx, r)
+	if err != nil {
+		return User{}, err
+	}
+	if user.ID == "" {
+		return User{}, lazycontroller.Error(
+			http.StatusUnauthorized,
+			fmt.Errorf("login required"),
+		)
+	}
+	return user, nil
+}
+
+func (c *AdminController) Index(user User) error {
+	c.Set("user", user)
+	return nil
+}
+```
+
+`GenX` methods may receive `context.Context`, `*http.Request`, route
+parameters, and other generated values. They return `T` or `(T, error)`.
+Generated values are cached by type for the current request.
+
+When a generator returns a non-nil error, GoLazy does not call the action. It
+passes the error through the normal controller error path, including
+`HandleError(http.ResponseWriter, *http.Request, error)` when the concrete
+controller or embedded base controller implements it. For protected areas,
+prefer a typed `User` generator plus a `HandleError` redirect/status policy over
+setting a `CurrentUser` string in `BeforeAction`.
+
 ## Expected Errors
 
 Return `lazycontroller.Error(status, err)` for expected HTTP failures such as

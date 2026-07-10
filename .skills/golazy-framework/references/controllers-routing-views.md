@@ -52,49 +52,54 @@ Use `c.Status`, `c.Header`, and `c.ContentType` to set metadata before the
 automatic render. Use the raw `http.ResponseWriter` only when the action owns
 the whole response body.
 
-## Generated Action Arguments
+## Generated Action And Hook Arguments
 
-Use generator arguments when an action should receive a typed request-derived
-value instead of reading untyped state from the controller:
+Use generator arguments when an action or `BeforeAction` hook should receive a
+typed request-derived value instead of reading untyped state from the
+controller:
 
 ```go
-type User struct {
-	ID string
-}
+type User string
 
 func (c *BaseController) GenUser(
-	ctx context.Context,
 	r *http.Request,
-) (User, error) {
-	user, err := userFromSession(ctx, r)
+) (*User, error) {
+	userID, err := userIDFromSession(r)
 	if err != nil {
-		return User{}, err
+		return nil, err
 	}
-	if user.ID == "" {
-		return User{}, lazycontroller.Error(
+	if userID == "" {
+		return nil, lazycontroller.Error(
 			http.StatusUnauthorized,
 			fmt.Errorf("login required"),
 		)
 	}
-	return user, nil
+	user := User(userID)
+	return &user, nil
 }
 
-func (c *AdminController) Index(user User) error {
+func (c *BaseController) BeforeAction(user *User) error {
+	c.Layout("admin")
 	c.Set("user", user)
+	return nil
+}
+
+func (c *AdminController) Index() error {
 	return nil
 }
 ```
 
 `GenX` methods may receive `context.Context`, `*http.Request`, route
 parameters, and other generated values. They return `T` or `(T, error)`.
-Generated values are cached by type for the current request.
+Generated values are cached by type inside the current action or hook call.
 
-When a generator returns a non-nil error, GoLazy does not call the action. It
-passes the error through the normal controller error path, including
-`HandleError(http.ResponseWriter, *http.Request, error)` when the concrete
-controller or embedded base controller implements it. For protected areas,
-prefer a typed `User` generator plus a `HandleError` redirect/status policy over
-setting a `CurrentUser` string in `BeforeAction`.
+When a generator returns a non-nil error, GoLazy does not call the action or
+hook that requested it. It passes the error through the normal controller error
+path, including `HandleError(http.ResponseWriter, *http.Request, error)` when
+the concrete controller or embedded base controller implements it. For
+protected areas, prefer a typed `User` generator, generated-argument
+`BeforeAction`, and `HandleError` redirect/status policy over setting a
+`CurrentUser` string or adding auth-only user parameters to every action.
 
 ## Expected Errors
 

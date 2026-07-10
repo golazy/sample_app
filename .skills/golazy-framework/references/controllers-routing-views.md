@@ -101,6 +101,41 @@ protected areas, prefer a typed `User` generator, generated-argument
 `BeforeAction`, and `HandleError` redirect/status policy over setting a
 `CurrentUser` string or adding auth-only user parameters to every action.
 
+## Typed Form Generators
+
+For submitted forms, put the input struct in its own file near the controller
+and generate it for the action:
+
+```go
+// password_form.go
+type PasswordForm struct {
+	Username string
+	Password string
+}
+
+func (c *SessionsController) GenPasswordForm() (*PasswordForm, error) {
+	form := &PasswordForm{}
+	if err := c.Decode(form); err != nil {
+		return nil, err
+	}
+	return form, nil
+}
+
+func (c *SessionsController) Create(form *PasswordForm) error {
+	username := strings.TrimSpace(form.Username)
+	if err := c.sessions.SignIn(username, form.Password); err != nil {
+		return err
+	}
+	return c.Redirect("/admin")
+}
+```
+
+Keep request parsing in `GenPasswordForm`, not in `Create`.
+`c.Decode(form)` parses the current request form through GoLazy's form decoder.
+If decoding fails, return the error from the generator; GoLazy skips the action
+and sends the error through the normal controller error path, including
+`HandleError`.
+
 ## Expected Errors
 
 Return `lazycontroller.Error(status, err)` for expected HTTP failures such as

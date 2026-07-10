@@ -36,6 +36,10 @@ project conventions that should apply to coding agents and automation.
 - Controller actions should return `error`; use the standard
   `http.ResponseWriter` and `*http.Request` signature unless route arguments
   materially simplify the action.
+- For submitted forms, prefer a typed `GenX` form generator such as
+  `GenPasswordForm() (*PasswordForm, error)` that allocates the form and calls
+  `c.Decode(form)`, then let the action receive `*PasswordForm`. Decode errors
+  continue through `HandleError`.
 - Use `Set("name", value)` for template data. Template data is escaped by
   default; only trusted framework-generated HTML should become `template.HTML`.
 - Keep production secrets out of source. Put ordinary checked-in development

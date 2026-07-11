@@ -59,47 +59,60 @@ typed request-derived value instead of reading untyped state from the
 controller:
 
 ```go
-type User string
+type User struct {
+	ID string
+}
 
-func (c *BaseController) GenUser(
-	r *http.Request,
-) (*User, error) {
-	userID, err := userIDFromSession(r)
+type AuthenticatedUser struct {
+	*User
+}
+
+var errLoginRequired = errors.New("login required")
+
+func (c *BaseController) GenUser() (*User, error) {
+	value, ok, err := c.SessionGet("user_id")
 	if err != nil {
 		return nil, err
 	}
-	if userID == "" {
-		return nil, lazycontroller.Error(
-			http.StatusUnauthorized,
-			fmt.Errorf("login required"),
-		)
+	userID, _ := value.(string)
+	if !ok || userID == "" {
+		return nil, nil
 	}
-	user := User(userID)
-	return &user, nil
+	return c.users.FindByID(userID)
+}
+
+func (c *BaseController) GenAuthenticatedUser(
+	user *User,
+) (*AuthenticatedUser, error) {
+	if user == nil {
+		return nil, errLoginRequired
+	}
+	return &AuthenticatedUser{User: user}, nil
 }
 
 func (c *BaseController) BeforeAction(user *User) error {
-	c.Layout("admin")
-	c.Set("user", user)
+	c.Set("current_user", user)
 	return nil
 }
 
-func (c *AdminController) Index() error {
+func (c *AdminController) Index(user *AuthenticatedUser) error {
 	return nil
 }
 ```
 
 `GenX` methods may receive `context.Context`, `*http.Request`, route
 parameters, and other generated values. They return `T` or `(T, error)`.
-Generated values are cached by type inside the current action or hook call.
+Generated values are cached by type inside the current controller request, so
+`BeforeAction` and the routed action share the same generated value.
 
 When a generator returns a non-nil error, GoLazy does not call the action or
 hook that requested it. It passes the error through the normal controller error
 path, including `HandleError(http.ResponseWriter, *http.Request, error)` when
 the concrete controller or embedded base controller implements it. For
-protected areas, prefer a typed `User` generator, generated-argument
-`BeforeAction`, and `HandleError` redirect/status policy over setting a
-`CurrentUser` string or adding auth-only user parameters to every action.
+protected areas, keep auth wrapper types such as `AuthenticatedUser` in the
+application, generate them from the optional current user, and map
+`errLoginRequired` to a redirect or status in the application base controller's
+`HandleError`.
 
 ## Typed Form Generators
 
@@ -126,7 +139,10 @@ func (c *SessionsController) Create(form *PasswordForm) error {
 	if err := c.sessions.SignIn(username, form.Password); err != nil {
 		return err
 	}
-	return c.Redirect("/admin")
+	return c.RedirectToRoute(
+		"admin",
+		lazycontroller.RedirectStatus(http.StatusSeeOther),
+	)
 }
 ```
 
@@ -135,6 +151,33 @@ Keep request parsing in `GenPasswordForm`, not in `Create`.
 If decoding fails, return the error from the generator; GoLazy skips the action
 and sends the error through the normal controller error path, including
 `HandleError`.
+
+Application validation errors stay in the action. On failed create or update,
+set `http.StatusUnprocessableEntity`, restore the form data needed by the view,
+and render the form view. On success, flash if useful and redirect:
+
+```go
+func (c *PostsController) Create(form *PostForm) error {
+	post, validation, err := c.posts.Create(form.Title, form.Content)
+	if err != nil {
+		return err
+	}
+	if validation.HasErrors() {
+		c.Status(http.StatusUnprocessableEntity)
+		c.Set("form", form)
+		c.Set("errors", validation)
+		return c.Render("new")
+	}
+	if err := c.FlashSet("notice", "Post created"); err != nil {
+		return err
+	}
+	return c.RedirectToRoute(
+		"post",
+		post.ID,
+		lazycontroller.RedirectStatus(http.StatusSeeOther),
+	)
+}
+```
 
 ## Expected Errors
 

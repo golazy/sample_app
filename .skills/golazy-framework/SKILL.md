@@ -56,6 +56,13 @@ For most application features:
 - Keep generated apps small unless the task asks for a larger product slice.
 - Do not add broad framework abstractions to the sample app.
 - Do not share controller instances or mutable render state between requests.
+- Prefer typed form generators for submitted input. Validation failures after
+  create or update should set `http.StatusUnprocessableEntity` and render the
+  form view; successful writes should redirect with a named route and
+  `http.StatusSeeOther`.
+- Use controller session and flash helpers (`SessionGet`, `SessionSet`,
+  `SessionDelete`, `FlashSet`, `FlashGet`) in controller code, and keep auth
+  wrapper types such as `AuthenticatedUser` in application packages.
 - Do not use `context.Context` as a general parameter bag; use it for
   initialized services and framework infrastructure.
 - Do not edit generated assets by hand when the source manifest, JavaScript,

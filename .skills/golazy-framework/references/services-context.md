@@ -88,8 +88,10 @@ routes, sessions, rendering, assets, or redirects.
   with `lazyauth.ConfigFromContext(ctx)` when a controller or service should
   authenticate against the app backend. The default backend is in-memory with
   zero users unless `LAZYAUTH_DEFAULT_PASS` seeds the bootstrap user.
-- Sessions: enable `lazyapp.Config.Sessions`, then use `lazysession.Get(r)` in
-  handlers that need browser state or flash messages.
+- Sessions: enable `lazyapp.Config.Sessions`, then use controller
+  `SessionGet`, `SessionSet`, `SessionDelete`, `FlashSet`, and `FlashGet` in
+  controller code. Use low-level `lazysession.Get(r)` only for raw handlers
+  that intentionally mutate browser session state directly.
 - Mail: initialize a `lazymailer.Mailer` and app-specific mailer services from
   dependencies.
 - Jobs: define job functions in application packages and wire job config from

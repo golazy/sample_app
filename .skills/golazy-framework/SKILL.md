@@ -28,6 +28,8 @@ belongs before editing code.
   dependency initialization, shared state, and service tests.
 - `references/assets-development.md`: embedded public files, Tailwind, lazy js,
   importmaps, `lazy` development behavior, and generated assets.
+- `references/cheatsheet-snippets.md`: how generated-app snippets on
+  golazy.dev are maintained from sample-app deltas.
 - `references/testing-verification.md`: focused package tests, full HTTP tests,
   route/asset checks, and verification commands.
 
@@ -72,6 +74,9 @@ For most application features:
 - Keep production secrets outside source. Development examples may live in
   `mise.toml` or `.secrets/development.env`.
 - Prefer standard-library HTTP, templates, and focused dependencies.
+- When changing a public GoLazy API, generated-app convention, or sample-app
+  pattern, review the latest guides and the public cheatsheet snippets
+  together so copied "how can I?" examples do not drift from this skill.
 
 ## Useful Commands
 

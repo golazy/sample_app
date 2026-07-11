@@ -56,9 +56,11 @@ For most application features:
 - Keep generated apps small unless the task asks for a larger product slice.
 - Do not add broad framework abstractions to the sample app.
 - Do not share controller instances or mutable render state between requests.
-- Prefer typed form generators for submitted input. Validation failures after
-  create or update should set `http.StatusUnprocessableEntity` and render the
-  form view; successful writes should redirect with a named route and
+- Prefer typed form generators for submitted input. Validate form structs with
+  `lazyerrors.Validator(form)` and optional form-owned `Validate() error`
+  methods. Validation failures after create or update should set
+  `http.StatusUnprocessableEntity` and render the form view with the joined
+  validation error; successful writes should redirect with a named route and
   `http.StatusSeeOther`.
 - Use controller session and flash helpers (`SessionGet`, `SessionSet`,
   `SessionDelete`, `FlashSet`, `FlashGet`) in controller code, and keep auth

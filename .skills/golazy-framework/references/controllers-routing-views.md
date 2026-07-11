@@ -153,20 +153,26 @@ and sends the error through the normal controller error path, including
 `HandleError`.
 
 Application validation errors stay in the action. On failed create or update,
-set `http.StatusUnprocessableEntity`, restore the form data needed by the view,
-and render the form view. On success, flash if useful and redirect:
+return normal validation errors with `lazyerrors.Validator(form)`, set
+`http.StatusUnprocessableEntity`, restore the form data needed by the view, and
+render the form view. On success, flash if useful and redirect:
 
 ```go
+type PostForm struct {
+	Title   string `validate:"presence;min:3;max:120"`
+	Content string `validate:"presence"`
+}
+
 func (c *PostsController) Create(form *PostForm) error {
-	post, validation, err := c.posts.Create(form.Title, form.Content)
-	if err != nil {
-		return err
-	}
-	if validation.HasErrors() {
+	if err := lazyerrors.Validator(form); err != nil {
 		c.Status(http.StatusUnprocessableEntity)
 		c.Set("form", form)
-		c.Set("errors", validation)
+		c.Set("post_errors", err)
 		return c.Render("new")
+	}
+	post, err := c.posts.Create(form.Title, form.Content)
+	if err != nil {
+		return err
 	}
 	if err := c.FlashSet("notice", "Post created"); err != nil {
 		return err
@@ -178,6 +184,9 @@ func (c *PostsController) Create(form *PostForm) error {
 	)
 }
 ```
+
+Templates can use `field_errors_for .post_errors "title"` for one field or
+`errors_for .post_errors` for the full field-to-errors map.
 
 ## Expected Errors
 

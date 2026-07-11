@@ -42,10 +42,12 @@ project conventions that should apply to coding agents and automation.
   continue through `HandleError`.
 - Use controller `SessionGet`, `SessionSet`, `SessionDelete`, `FlashSet`, and
   `FlashGet` for browser session and flash behavior. Keep auth wrapper types
-  such as `AuthenticatedUser` in application code. On validation failures after
-  create or update, set `http.StatusUnprocessableEntity`, restore form/error
-  template data, and render the form view; on success, flash if needed and
-  redirect with a named route and `http.StatusSeeOther`.
+  such as `AuthenticatedUser` in application code. Form validation should
+  return normal joined errors from `lazyerrors.Validator(form)` and optional
+  form-owned `Validate() error` methods. On validation failure, set
+  `http.StatusUnprocessableEntity`, restore form/error template data, and
+  render the form view; on success, flash if needed and redirect with a named
+  route and `http.StatusSeeOther`.
 - Use `Set("name", value)` for template data. Template data is escaped by
   default; only trusted framework-generated HTML should become `template.HTML`.
 - Keep production secrets out of source. Put ordinary checked-in development

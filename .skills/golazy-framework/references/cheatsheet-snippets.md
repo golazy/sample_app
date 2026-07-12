@@ -1,11 +1,16 @@
 # Cheatsheet Snippets
 
-The public GoLazy cheatsheet is a generated-app maintenance surface. It lives
-in the website repository at:
+The public GoLazy cheatsheet is a generated-app maintenance surface. The
+canonical latest page lives in the website repository at:
 
 ```text
-apps/golazy.dev/app/content/guides/latest/cheatsheet.md
+apps/golazy.dev/app/content/cheatsheets/latest/_index.md
 ```
+
+Released snapshots live beside it under
+`apps/golazy.dev/app/content/cheatsheets/<version>/_index.md`, and the public
+canonical route is `/cheatsheets/<version>`. `/how-tos` redirects there for
+search intent, but snippets should use the cheatsheet name.
 
 Use it when a task changes a public API, generated-app convention, or common
 sample-app pattern that users are likely to copy.
@@ -26,6 +31,7 @@ controller conventions, forms, SEO, caching, Turbo, assets, mailers, jobs,
 services, PWA, MCP, or the sample app skill itself:
 
 1. Update the focused latest guide.
-2. Update `cheatsheet.md` when a snippet exists or should be added.
+2. Update `cheatsheets/latest/_index.md` when a snippet exists or should be
+   added.
 3. Update this skill or its references when agents need the same convention.
 4. Add a changelog note when the public guide surface changes.

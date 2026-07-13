@@ -35,8 +35,9 @@ the composition layer, then relies on a few focused packages indirectly.
 - `lazyassets`: registers embedded public files, computes content hashes,
   serves logical and permanent asset paths, rewrites CSS `url(...)` references,
   and provides `asset_path` and `stylesheet` helpers.
-- `lazyforms`: model-aware form helpers for templates. It renders forms; request
-  parsing still belongs in controller actions or services.
+- `lazyforms`: model-aware form helpers for templates. It renders forms;
+  request decoding belongs in typed controller form generators and accepted
+  business input goes to services.
 - `lazyturbo`: Turbo helpers and response support for server-rendered updates.
 - `lazyseo`: SEO, metadata, sitemap, and robots helpers.
 - `lazypwa` and `lazyworkers`: opt-in progressive web app and browser worker
@@ -76,3 +77,8 @@ the composition layer, then relies on a few focused packages indirectly.
 
 Use `lazy docs <package>` for exact package documentation from the current
 module graph before depending on a newer or less common API.
+
+## Related
+
+[App Anatomy](app-anatomy.md) | [Services](services.md) |
+[Controllers](controllers.md) | [Assets](assets.md) | [Testing](testing-verification.md)

@@ -1,91 +1,142 @@
-# GoLazy Framework Skill
+---
+name: golazy-framework
+description: Develop, extend, debug, or review a GoLazy application using its generated-app conventions. Use for app architecture, services and dependency lifecycle, routes, controllers, views, forms, SEO, caching, Turbo, Tailwind, JavaScript, assets, mailers, jobs, PWA, MCP, and application tests.
+---
 
-Use this skill when adding or changing functionality in a GoLazy application.
-It is written for coding agents that need to understand where each piece
-belongs before editing code.
+# Develop A GoLazy Application
 
-## First Move
+Treat the application as two layers:
 
-1. Read `AGENTS.md` and `README.md` in the application root.
-2. Read only the references in this skill that match the task.
-3. Identify whether the change is application behavior or framework-generic
-   behavior. Application-specific behavior belongs in this app. Reusable
-   controller, routing, rendering, asset, mailer, job, migration, or storage
-   behavior belongs in GoLazy packages, not in generated application code.
-4. Plan the feature by ownership boundary: service/domain first, dependency
-   wiring second, route/controller/view third, tests last.
+- `services/` owns the domain: business rules, use cases, domain models, data
+  access, and external systems used to perform business work.
+- `app/` owns presentation and communication: controllers, views, forms,
+  browser code, mail rendering, job adapters, and MCP adapters.
 
-## References
+Authorization may stay at the presentation boundary. Mailers and other
+communication adapters may format and deliver messages. Neither should
+reimplement business rules. `init/` composes the application; it does not own
+business behavior.
 
-- `references/framework-parts.md`: what the major GoLazy packages own and when
-  to reach for each one.
-- `references/app-anatomy.md`: generated app directories, startup flow, and
-  where new files usually belong.
-- `references/controllers-routing-views.md`: route declarations, controller
-  constructors, action methods, generator arguments, template data, layouts,
-  errors, and helpers.
-- `references/services-context.md`: top-level services, typed context helpers,
-  dependency initialization, shared state, and service tests.
-- `references/assets-development.md`: embedded public files, Tailwind, lazy js,
-  importmaps, `lazy` development behavior, and generated assets.
-- `references/cheatsheet-snippets.md`: how generated-app snippets on
-  golazy.dev are maintained from sample-app deltas.
-- `references/testing-verification.md`: focused package tests, full HTTP tests,
-  route/asset checks, and verification commands.
+## Start Here
 
-## Feature Recipe
+1. Read `AGENTS.md` in the application root.
+2. Read [App Anatomy](references/app-anatomy.md).
+3. Read only the topic files needed for the change. Every topic below links to
+   its closest related topics.
+4. For behavior changes, begin with [Services](references/services.md), then
+   wire dependencies, routes, controllers, and views in that order.
+5. Finish with [Views](references/views.md) when rendering changes and
+   [Testing](references/testing-verification.md) for every change.
 
-For most application features:
+All paths in this skill are relative to the application root. The skill is
+self-contained: do not search for a sibling framework checkout, website
+repository, or workspace documentation to perform ordinary app work. Use
+`lazy docs <package>` when an uncommon API needs exact local documentation.
 
-1. Add or update a top-level package under `services/` for business behavior.
-2. Register long-lived service instances in `init/dependencies.go` with
-   `lazydeps.Service`.
-3. Add or update a controller package under `app/controllers/`. Constructors
-   receive only `context.Context`, embed `controllers.BaseController`, and
-   resolve required services from typed context helpers.
-4. Register routes in `init/routes.go` through `Draw`. Use resource routes for
-   conventional CRUD and explicit verb routes for custom endpoints.
-5. Add views under `app/views/<controller>/<action>.html.tpl` and use
-   `Set("name", value)` from the controller to pass template data.
-6. Add browser code under `app/js` and Tailwind source under `app/styles` when
-   the feature needs frontend behavior. Regenerate public outputs with
-   `lazy js` or `lazy tailwind` when their inputs change.
-7. Add focused service tests beside the service and app-level HTTP tests under
-   `test/` with `lazytest`.
+## Application Workflow
 
-## Guardrails
+1. Define or extend one focused domain service under `services/<name>/`.
+2. Give the service a `New` constructor with the `lazydeps` lifecycle return
+   shape when practical, including typed context installation and cleanup.
+3. Register it in `init/dependencies.go`. Use dependency references inside
+   another service initializer so startup and reverse-order shutdown remain
+   explicit.
+4. Add a request-local controller under `app/controllers/<name>_controller/`.
+   Resolve services in its constructor and keep actions thin.
+5. Register the controller with `router.Resources`. Add collection, member, or
+   nested routes through the resource callback. Use top-level verb routes only
+   when the endpoint is not meaningfully a resource.
+6. Add templates under `app/views`, browser behavior under `app/js`, and styles
+   under `app/styles`.
+7. Test domain behavior beside the service and test the composed HTTP behavior
+   under `test/`.
 
-- Keep generated apps small unless the task asks for a larger product slice.
-- Do not add broad framework abstractions to the sample app.
-- Do not share controller instances or mutable render state between requests.
-- Prefer typed form generators for submitted input. Validate form structs with
-  `lazyerrors.Validator(form)` and optional form-owned `Validate() error`
-  methods. Validation failures after create or update should set
-  `http.StatusUnprocessableEntity` and render the form view with the joined
-  validation error; successful writes should redirect with a named route and
-  `http.StatusSeeOther`.
-- Use controller session and flash helpers (`SessionGet`, `SessionSet`,
-  `SessionDelete`, `FlashSet`, `FlashGet`) in controller code, and keep auth
-  wrapper types such as `AuthenticatedUser` in application packages.
-- Do not use `context.Context` as a general parameter bag; use it for
-  initialized services and framework infrastructure.
-- Do not edit generated assets by hand when the source manifest, JavaScript,
-  package files, or Tailwind input should be changed instead.
-- Keep production secrets outside source. Development examples may live in
-  `mise.toml` or `.secrets/development.env`.
-- Prefer standard-library HTTP, templates, and focused dependencies.
-- When changing a public GoLazy API, generated-app convention, or sample-app
-  pattern, review the latest guides and the public cheatsheet snippets
-  together so copied "how can I?" examples do not drift from this skill.
+## Topic Index
 
-## Useful Commands
+### Structure
+
+- [App Anatomy](references/app-anatomy.md): ownership boundaries, startup, and
+  the end-to-end feature recipe.
+- [Framework Parts](references/framework-parts.md): which GoLazy package owns
+  each framework concern.
+- [Views](references/views.md): templates, layouts, partials, data, and choosing
+  another view from a conventional action.
+- [Testing](references/testing-verification.md): service and full-app tests.
+
+### Routes And Controllers
+
+- [Routes](references/routes.md)
+- [Controllers](references/controllers.md)
+- [Controllers/Base](references/controllers-base.md)
+- [Controllers/Generators](references/controllers-generators.md)
+- [Controllers/BeforeFilters](references/controllers-beforefilters.md)
+- [Controllers/ContentTypes](references/controllers-contenttypes.md)
+- [Controllers/LazyLoading](references/controllers-lazyloading.md)
+- [Controllers/Session](references/controllers-session.md)
+- [Controllers/Variants](references/controllers-variants.md)
+- [Forms](references/forms.md)
+
+### SEO And Cache
+
+- [SEO](references/seo.md)
+- [SEO/href-lang-tags](references/seo-href-lang-tags.md)
+- [SEO/alternates](references/seo-alternates.md)
+- [SEO/Metadata (JSONLD)](references/seo-metadata-jsonld.md)
+- [Cache/Actions](references/cache-actions.md)
+- [Cache/Views](references/cache-views.md)
+
+### Turbo
+
+- [Turbo/Visits](references/turbo-visits.md)
+- [Turbo/Forms](references/turbo-forms.md)
+- [Turbo/Frames](references/turbo-frames.md)
+- [Turbo/Frames/Controllers](references/turbo-frames-controllers.md)
+- [Turbo/Streams](references/turbo-streams.md)
+- [Turbo/Streams/Controller](references/turbo-streams-controller.md)
+- [Turbo/ControllerFrames](references/turbo-controllerframes.md)
+- [Turbo/Controller](references/turbo-controller.md)
+
+### Frontend And Assets
+
+- [Tailwind](references/tailwind.md)
+- [lazyshaft](references/lazyshaft.md)
+- [Js](references/js.md)
+- [Assets](references/assets.md)
+
+### Runtime Adapters
+
+- [Mailers](references/mailers.md)
+- [Jobs](references/jobs.md)
+- [Services](references/services.md)
+- [PWA](references/pwa.md)
+- [MCP](references/mcp.md)
+
+## Non-Negotiable Conventions
+
+- Put business decisions in `services/`, never in controllers, templates,
+  mailers, jobs, MCP tools, `init/`, or `main`.
+- Keep controllers concerned with authorization, request/response behavior,
+  presentation data, content negotiation, and service orchestration.
+- Prefer conventional resource actions: `Index`, `New`, `Create`, `Show`,
+  `Edit`, `Update`, and `Delete`.
+- Do not add one `Get` route and one custom action for every static-looking
+  page. Model pages as a resource, use `Show`, and select the view with
+  `Render` or `Variants` in the controller.
+- Use typed generators for route values, loaded records, users, and forms.
+- Use named route helpers and asset helpers instead of hard-coded generated
+  paths.
+- Never edit generated CSS, importmaps, or lazyshaft output when a source file
+  or manifest owns the change.
+- Keep services safe for concurrent requests and controllers request-local.
+
+## Verify
+
+Run the smallest relevant checks, then the whole app suite:
 
 ```sh
 lazy routes
-lazy docs
-lazy docs controller
-lazy tailwind
-lazy js
+lazy tailwind  # when Tailwind inputs changed
+lazy js        # when JavaScript inputs changed
 go test ./...
 go test -race ./...
 go vet ./...

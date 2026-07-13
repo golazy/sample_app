@@ -10,8 +10,9 @@ type service struct{}
 
 type contextKey struct{}
 
-func New() Service {
-	return service{}
+func New(ctx context.Context) (context.Context, Service, error, context.CancelFunc) {
+	service := service{}
+	return WithContext(ctx, service), service, nil, nil
 }
 
 func (service) Hello() string {

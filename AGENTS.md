@@ -3,14 +3,21 @@
 This repository is a GoLazy application. Keep this file focused on durable
 project conventions that should apply to coding agents and automation.
 
-## Project Shape
+## Ownership
 
-- Application code lives under `app`.
+- Business and domain logic lives in top-level `services`. Services own use
+  cases, domain models, business rules, data access, and domain-facing
+  integrations.
+- `app` is the presentation and communication layer. It owns HTTP controllers,
+  views, forms, browser behavior, mailers, job adapters, and MCP adapters.
+- Authorization may live at the controller boundary. Mailers may format and
+  deliver messages. Jobs and MCP tools may translate their inputs. These
+  adapters must call services for business behavior instead of duplicating it.
+- `init` is the composition root for dependencies, routes, and app config. It
+  must not contain business logic.
 - Shared controller behavior lives in `app/controllers/base_controller.go`.
 - Concrete controllers live in package directories under `app/controllers`;
   the sample route is handled by `app/controllers/home_controller/homecontroller.go`.
-- Business services live in top-level `services`, outside the web-facing
-  `app` tree.
 - Views live in `app/views`; layouts live in `app/views/layouts`.
 - Public assets live in `app/public` and are embedded into production builds.
 - The executable entrypoint is `cmd/app`.
@@ -22,8 +29,18 @@ project conventions that should apply to coding agents and automation.
 ## GoLazy Conventions
 
 - Initialize shared dependencies once through `init.Dependencies`.
+- Give each service a `New` constructor. Prefer the `lazydeps.Func[T]` lifecycle
+  shape so `lazydeps.Service` can register it directly, install it in context,
+  and run cleanup during dependency-ordered shutdown.
 - Register routes only through `func Draw(router *lazyroutes.Scope)` in
   `init/routes.go`.
+- Start with `router.Resources` and conventional `Index`, `New`, `Create`,
+  `Show`, `Edit`, `Update`, and `Delete` actions. Add collection, member, and
+  nested routes through the resource callback. Use top-level verb routes only
+  for endpoints that are not meaningfully resources.
+- Model multiple content pages as a resource with `Show`; select an explicit
+  view with `Render` or `Variants` instead of adding one `Get` route and custom
+  action per page.
 - Controller constructors should receive only `context.Context` and return
   `(*Controller, error)`.
 - Concrete controllers should embed `controllers.BaseController` so shared
@@ -56,10 +73,9 @@ project conventions that should apply to coding agents and automation.
 
 ## Guide Contract
 
-This repository is the template for `lazy new`. Keep these instructions aligned
-with the latest GoLazy Development guides: QuickStart for app shape, Mise for
-tools/env/secrets/tasks, Lazy for the development loop, Services for local
-service lifecycle, and Datasets for data snapshots.
+This repository is the template for `lazy new`. Its embedded skill must contain
+the app-development conventions an agent needs without requiring files from a
+sibling framework, website, workspace, or documentation repository.
 
 Keep `AGENTS.md` as the concise shared source for generated-app guidance. If a
 workflow grows too large for this file, split it into the current skill layout:

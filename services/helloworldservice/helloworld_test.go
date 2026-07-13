@@ -6,15 +6,26 @@ import (
 )
 
 func TestServiceSaysHello(t *testing.T) {
-	service := New()
+	_, service, err, stop := New(context.Background())
+	if err != nil {
+		t.Fatalf("New() error = %v", err)
+	}
+	if stop != nil {
+		defer stop()
+	}
 	if got, want := service.Hello(), "Hello"; got != want {
 		t.Fatalf("Hello() = %q, want %q", got, want)
 	}
 }
 
 func TestContextHelpers(t *testing.T) {
-	service := New()
-	ctx := WithContext(context.Background(), service)
+	ctx, _, err, stop := New(context.Background())
+	if err != nil {
+		t.Fatalf("New() error = %v", err)
+	}
+	if stop != nil {
+		defer stop()
+	}
 
 	got, ok := FromContext(ctx)
 	if !ok {

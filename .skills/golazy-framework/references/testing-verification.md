@@ -13,6 +13,10 @@ services/<name>/<name>_test.go
 Use these for deterministic business behavior, parsing, validation, repository
 logic with fakes, and service-specific edge cases.
 
+When `New` uses the `lazydeps` lifecycle shape, assert construction errors and
+call a non-nil cleanup function in the test. Add focused cleanup tests for
+services that own goroutines, pools, files, listeners, or clients.
+
 ## Application HTTP Tests
 
 Put full app tests under:
@@ -87,3 +91,8 @@ directory:
 mkdir -p .tmp
 go build -o .tmp/sample-app ./cmd/app
 ```
+
+## Related
+
+[Services](services.md) | [Routes](routes.md) | [Controllers](controllers.md) |
+[Assets](assets.md)

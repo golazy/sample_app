@@ -133,12 +133,15 @@ registered in `init/routes.go`. The application is assembled in `init/app.go`.
 Routes point at controller constructors. GoLazy creates request-local
 controllers so mutable render state stays isolated to one request.
 
-Agent-facing framework notes live in `.skills/golazy-framework`. They explain
-where routes, controllers, services, views, assets, sessions, jobs, mailers,
-storage, and tests belong when extending a GoLazy application.
+Agent-facing application guidance lives in `.skills/golazy-framework`. It is a
+self-contained, cross-linked set of references for routes, controllers, forms,
+views, SEO, caching, Turbo, frontend assets, services, mailers, jobs, PWA, MCP,
+and tests. It treats `services/` as the owner of business behavior and `app/`
+as the presentation and communication layer.
 
-`init/dependencies.go` registers `helloworldservice`. The home controller reads
-that service from context and uses `Hello()` as the page title.
+`helloworldservice.New` uses the `lazydeps` lifecycle return shape.
+`init/dependencies.go` registers it directly, and the home controller reads the
+service from context and uses `Hello()` as the page title.
 
 Controller views live at:
 

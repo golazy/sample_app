@@ -2,7 +2,7 @@ module sample_app
 
 go 1.26.2
 
-require golazy.dev v0.1.20
+require golazy.dev v0.1.21
 
 require (
 	github.com/beorn7/perks v1.0.1 // indirect
